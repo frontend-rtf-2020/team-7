@@ -2,7 +2,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const crypto = require('crypto');
-const api = require('./controllers/session.js');
 const db = require('./data/db');
 const userRouter = require('./routes/router');
 
