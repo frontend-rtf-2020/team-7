@@ -9,6 +9,6 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     store: new MongoStore({
-        url: process.env.MONGOSESSION_URI || 'mongodb+srv://Netwar:hWJQSaV909aGwZu3@cluster0-noog9.mongodb.net/session?retryWrites=true&w=majority',
+        url: 'mongodb+srv://Netwar:hWJQSaV909aGwZu3@cluster0-noog9.mongodb.net/sessions?retryWrites=true&w=majority',
     })
 }));

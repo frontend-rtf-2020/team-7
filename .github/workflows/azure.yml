@@ -11,11 +11,15 @@
 on:
   release:
     types: [created]
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
 
 env:
   AZURE_WEBAPP_NAME: best-messenger    # set this to your application's name
-  AZURE_WEBAPP_PACKAGE_PATH: '../index.js'      # set this to the path to your web app project, defaults to the repository root
-  NODE_VERSION: '10.x'                # set this to the node version to use
+  AZURE_WEBAPP_PACKAGE_PATH: './server'      # set this to the path to your web app project, defaults to the repository root
+  NODE_VERSION: '12.x'                # set this to the node version to use
 
 jobs:
   build-and-deploy:
@@ -31,9 +35,18 @@ jobs:
       run: |
         # Build and test the project, then
         # deploy to Azure Web App.
+        pushd ./client/
         npm install
         npm run build --if-present
-        npm run test --if-present
+        #npm run test --if-present
+        mkdir ../server/client/
+        cp -r ./build/* ../server/client/
+        popd
+        pushd ./server/
+        npm install
+        popd
+        #npm run build --if-present
+        #npm run test --if-present
     - name: 'Deploy to Azure WebApp'
       uses: azure/webapps-deploy@v1
       with:
