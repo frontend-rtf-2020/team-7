@@ -1,9 +1,47 @@
 const User = require('../models/user-model');
 const crypto = require('crypto');
+const nodemailer = require("nodemailer");
+let receivers;
+let randomCode;
 
 function hash(text) {
     return crypto.createHash('sha1')
         .update(text).digest('base64')
+}
+
+function sendEmail() {
+    let transporter = nodemailer.createTransport({
+        host: "smtp.yandex.ru",
+        port: 465,
+        secure: true, // true for 465, false for other ports
+        auth: {
+            user: process.env.EMAILLOGIN,
+            pass: process.env.EMAILPASS
+        }
+    });
+
+    //Генерация рандомной строки длиной в 6 символов
+    function str_rand() {
+        let result       = '';
+        let words        = '0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM';
+        let max_position = words.length - 1;
+        for( i = 0; i < 6; ++i ) {
+            position = Math.floor ( Math.random() * max_position );
+            result = result + words.substring(position, position + 1);
+        }
+        return result;
+    }
+    let randomCode = str_rand();
+
+    // send mail with defined transport object
+    let info = transporter.sendMail({
+        from: 'MessangerBot@yandex.ru', // sender address
+        to: receivers, // list of receivers
+        subject: "Проверочный код", // Subject line
+        text: "Проверочный код: " + randomCode, // plain text body
+    });
+
+    return randomCode;
 }
 
 createUser = (req, res) => {
@@ -19,21 +57,31 @@ createUser = (req, res) => {
         return res.status(400).json({ success: false, error: err })
     }
 
-    user
-        .save()
-        .then(() => {
-            return res.status(201).json({
-                success: true,
-                id: user._id,
-                message: 'Пользователь создан!',
+    if (req.body.randomCode.length === 0) {
+        receivers = req.body.email;
+        console.log(receivers);
+        randomCode = sendEmail(receivers);
+        console.log(randomCode);
+    }
+    let enteredCode = req.body.randomCode;
+    console.log('Исходник ' + randomCode + '    Введенный ' + enteredCode);
+    if (enteredCode === randomCode) {
+        user
+            .save()
+            .then(() => {
+                return res.status(201).json({
+                    success: true,
+                    id: user._id,
+                    message: 'Пользователь создан!',
+                })
             })
-        })
-        .catch(error => {
-            return res.status(400).json({
-                error,
-                message: 'Пользователь не создан!',
+            .catch(error => {
+                return res.status(400).json({
+                    error,
+                    message: 'Пользователь не создан!',
+                })
             })
-        })
+    }
 };
 
 updateUser = async (req, res) => {

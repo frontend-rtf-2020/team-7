@@ -1,4 +1,6 @@
 import React, { Component } from 'react'
+import { Button, Header, Icon, Modal } from 'semantic-ui-react'
+import 'semantic-ui-css/semantic.min.css'
 import api from '../api'
 import { FormErrors } from './FormErrors';
 import styled from "styled-components";
@@ -19,6 +21,7 @@ class Registration extends Component {
             email: '',
             username: '',
             password: '',
+            randomCode: '',
             formErrors: {email: '', password: ''},
             emailValid: false,
             passwordValid: false,
@@ -44,6 +47,27 @@ class Registration extends Component {
         this.setState({ password },
             () => { this.validateField(name, password) })
     };
+
+    handleChangeInputCodeCheck = async event => {
+        const randomCode = event.target.value;
+        this.setState({ randomCode })
+    };
+    handleOpen = async () => {
+        this.setState({ modalOpen: true });
+        const { email, username, password, randomCode } = this.state;
+        const payload = { email, username, password, randomCode};
+
+        await api.createUser(payload).then(res => {
+            window.alert(`На указанный email отправлено письмо с кодом подтверждения`);
+            this.setState({
+                email: '',
+                username: '',
+                password: '',
+                randomCode: '',
+            })
+        })
+    };
+    handleClose = () => this.setState({ modalOpen: false });
 
     validateField(fieldName, value) {
         let fieldValidationErrors = this.state.formErrors;
@@ -77,8 +101,8 @@ class Registration extends Component {
     }
 
     handleIncludeUser = async () => {
-        const { email, username, password } = this.state;
-        const payload = { email, username, password};
+        const { email, username, password, randomCode } = this.state;
+        const payload = { email, username, password, randomCode};
 
         await api.createUser(payload).then(res => {
             window.alert(`Пользователь успешно создан`);
@@ -86,7 +110,8 @@ class Registration extends Component {
                 email: '',
                 username: '',
                 password: '',
-            })
+                randomCode: '',
+            });
             this.props.history.push("/login");
         }).catch(error => {
                 window.alert(`Пользователь не создан`)
@@ -121,7 +146,24 @@ class Registration extends Component {
                            value={this.state.password}
                            onChange={this.handleChangeInputPassword}  />
                 </div>
-                <button type="submit" className="btn btn-primary" onClick={this.handleIncludeUser}>Зарегистрироваться</button>
+
+                <Modal
+                    trigger={<button className="btn btn-primary" onClick={this.handleOpen}>Отправить код</button>}
+                    open={this.state.modalOpen}
+                    onClose={this.handleClose}
+                    basic
+                >
+                    <Modal.Content>
+                        <label htmlFor="randomCode">Проверка кода</label>
+                        <input type="randomCode" required className="form-control" name="randomCode"
+                               placeholder="Проверка кода"
+                               value={this.state.randomCode}
+                               onChange={this.handleChangeInputCodeCheck}  />
+                    </Modal.Content>
+                    <Modal.Actions>
+                        <button type="submit" className="btn btn-primary" onClick={this.handleIncludeUser}>Зарегистрироваться</button>
+                    </Modal.Actions>
+                </Modal>
                 <a className="btn btn-primary" href={'/'}>Отмена</a>
             </Form>
         )

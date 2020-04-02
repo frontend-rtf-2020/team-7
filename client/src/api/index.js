@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-    baseURL: 'https://best-messenger.azurewebsites.net/api',
+    baseURL: 'https://temp-messenger.azurewebsites.net/api',
 });
 
 export const createUser = payload => api.post(`/registration`, payload);
