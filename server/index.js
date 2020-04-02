@@ -4,8 +4,8 @@ const crypto = require('crypto');
 const userRouter = require('./routes/router');
 const cors = require('cors');
 const app = express();
-
-require('./data/db/index').connect();
+const mongoose = require('mongoose');
+const db = require('./data/db');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());

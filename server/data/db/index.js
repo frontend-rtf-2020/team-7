@@ -1,15 +1,9 @@
 const mongoose = require('mongoose');
-mongoose.Promise = global.Promise;
 
-const env = require('./env/environment');
-const mongoUri = `mongodb://${env.accountName}:${env.key}@${env.accountName}.documents.azure.com:${env.port}/${env.databaseName}?ssl=true`;
+const db = mongoose.connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+})
+    .then (() => console.log('MongoDB connected'))
+    .catch((err) => console.log(err));
 
-function connect() {
-	mongoose.set('debug', true);
-	return mongoose.connect(mongoUri, { useMongoClient: true });
-}
-
-module.exports = {
-	connect,
-	mongoose
-};
+module.exports = db;
