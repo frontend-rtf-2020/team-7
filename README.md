@@ -1,3 +1,2 @@
 # team-7
-
-https://best-messenger.azurewebsites.net/
+https://temp-messenger.azurewebsites.net/

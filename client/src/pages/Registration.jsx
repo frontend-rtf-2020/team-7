@@ -52,21 +52,19 @@ class Registration extends Component {
         const randomCode = event.target.value;
         this.setState({ randomCode })
     };
+
     handleOpen = async () => {
-        this.setState({ modalOpen: true });
-        const { email, username, password, randomCode } = this.state;
-        const payload = { email, username, password, randomCode};
+        const {email, username, password, randomCode} = this.state;
+        const payload = {email, username, password, randomCode};
 
         await api.createUser(payload).then(res => {
-            window.alert(`На указанный email отправлено письмо с кодом подтверждения`);
-            this.setState({
-                email: '',
-                username: '',
-                password: '',
-                randomCode: '',
-            })
-        })
+            this.setState({modalOpen: true});
+        }).catch(error => {
+            this.setState({modalOpen: false});
+            window.alert(`Пользователь с введенным email уже зарегистрирован`);
+        });
     };
+
     handleClose = () => this.setState({ modalOpen: false });
 
     validateField(fieldName, value) {
@@ -147,18 +145,19 @@ class Registration extends Component {
                            onChange={this.handleChangeInputPassword}  />
                 </div>
 
+                <button className="btn btn-primary" onClick={this.handleOpen}>Отправить код</button>
                 <Modal
-                    trigger={<button className="btn btn-primary" onClick={this.handleOpen}>Отправить код</button>}
                     open={this.state.modalOpen}
                     onClose={this.handleClose}
                     basic
                 >
                     <Modal.Content>
-                        <label htmlFor="randomCode">Проверка кода</label>
-                        <input type="randomCode" required className="form-control" name="randomCode"
-                               placeholder="Проверка кода"
-                               value={this.state.randomCode}
-                               onChange={this.handleChangeInputCodeCheck}  />
+                            <h2>На указанный email отправлено письмо с кодом подтверждения</h2>
+                            <label htmlFor="randomCode">Проверка кода</label>
+                            <input type="randomCode" required className="form-control" name="randomCode"
+                                   placeholder="Проверка кода"
+                                   value={this.state.randomCode}
+                                   onChange={this.handleChangeInputCodeCheck}  />
                     </Modal.Content>
                     <Modal.Actions>
                         <button type="submit" className="btn btn-primary" onClick={this.handleIncludeUser}>Зарегистрироваться</button>

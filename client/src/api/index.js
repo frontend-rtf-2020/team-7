@@ -1,23 +1,25 @@
 import axios from 'axios'
 
 const api = axios.create({
-    baseURL: 'https://best-messenger.azurewebsites.net/api',
-});
+  baseURL: 'https://best-messenger.azurewebsites.net/api'
+})
 
-export const createUser = payload => api.post(`/registration`, payload);
-export const getUsersByUsername = username => api.get(`/users/${username}`);
-export const updateUserById = (id, payload) => api.put(`/update/${id}`, payload);
-export const login = payload => api.post(`/login`, payload);
-export const logout = () => api.post(`/logout`);
-export const getUserById = id => api.get(`/user/${id}`);
+export const createUser = payload => api.post('/registration', payload)
+export const getUsersByUsername = username => api.get(`/users/${username}`)
+export const updateUserById = (id, payload) => api.put(`/update/${id}`, payload)
+export const login = payload => api.post('/login', payload)
+export const logout = () => api.post('/logout')
+export const getUserById = id => api.get(`/user/${id}`)
+export const loadUser = id => api.get(`/user/${id}`)
 
 const apis = {
-    createUser,
-    getUsersByUsername,
-    updateUserById,
-    login,
-    logout,
-    getUserById,
-};
+  createUser,
+  getUsersByUsername,
+  updateUserById,
+  login,
+  logout,
+  getUserById,
+  loadUser
+}
 
 export default apis

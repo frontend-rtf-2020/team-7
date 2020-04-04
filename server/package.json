@@ -10,10 +10,18 @@
     "crypto": "^1.0.1",
     "express": "^4.17.1",
     "mongoose": "^5.9.4",
-    "nodemon": "^2.0.2"
+    "nodemon": "^2.0.2",
+    "dotenv": "latest"
   },
   "devDependencies": {
     "connect-mongo": "^3.2.0",
+    "eslint": "^6.8.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-react": "^7.19.0",
+    "eslint-plugin-standard": "^4.0.1",
     "express-session": "^1.17.0",
     "mongodb": "^3.5.5",
     "nodemailer": "^6.4.6"
