@@ -3,11 +3,11 @@ import { connect } from "react-redux";
 import { logout } from "../actions/session";
 
 const mapStateToProps = ({ session }) => ({
-  session
+  session,
 });
 
-const mapDispatchToProps = dispatch => ({
-  logout: () => dispatch(logout())
+const mapDispatchToProps = (dispatch) => ({
+  logout: () => dispatch(logout()),
 });
 
 const Messenger = ({ logout, session }) => (
@@ -18,7 +18,4 @@ const Messenger = ({ logout, session }) => (
   </>
 );
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Messenger);
+export default connect(mapStateToProps, mapDispatchToProps)(Messenger);

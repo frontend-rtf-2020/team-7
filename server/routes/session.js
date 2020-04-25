@@ -1,18 +1,20 @@
-const express = require("express");
-const Joi = require("joi");
-const User = require("../models/user-model");
-const help = require("../util/helpers");
+const express = require('express');
+const Joi = require('joi');
+const User = require('../models/user-model');
+const help = require('../util/helpers');
 
 const sessionRouter = express.Router();
 
-sessionRouter.post("/login", async (req, res) => {
+sessionRouter.post('/login', async (req, res) => {
   try {
     const { emailOrUsername, password } = req.body;
-    const user = await User.findOne({ $or: [ {email: emailOrUsername}, {username: emailOrUsername } ] });
+    const user = await User.findOne({
+      $or: [{ email: emailOrUsername }, { username: emailOrUsername }],
+    });
     if (user && user.comparePasswords(password)) {
       const sessionUser = help.sessionizeUser(user);
 
-      req.session.user = sessionUser
+      req.session.user = sessionUser;
       res.send(sessionUser);
     } else {
       throw new Error('Неверные логин или пароль');
@@ -22,12 +24,12 @@ sessionRouter.post("/login", async (req, res) => {
   }
 });
 
-sessionRouter.delete("/logout", ({ session }, res) => {
+sessionRouter.delete('/logout', ({ session }, res) => {
   try {
     const user = session.user;
     if (user) {
-      session.destroy(err => {
-        if (err) throw (err);
+      session.destroy((err) => {
+        if (err) throw err;
         res.clearCookie('MessengerCookie');
         res.send(user);
       });
@@ -39,7 +41,7 @@ sessionRouter.delete("/logout", ({ session }, res) => {
   }
 });
 
-sessionRouter.get("/loadUser", ({ session: { user }}, res) => {
+sessionRouter.get('/loadUser', ({ session: { user } }, res) => {
   res.send({ user });
 });
 

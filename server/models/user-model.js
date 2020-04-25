@@ -1,28 +1,31 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
-const UserSchema = new mongoose.Schema({
-  email: {
-    type: String,
-    validate: {
-      validator: email => User.doesNotExist({ email }),
-      message: "Адрес электронной почты уже используется"
-    }
+const UserSchema = new mongoose.Schema(
+  {
+    email: {
+      type: String,
+      validate: {
+        validator: (email) => User.doesNotExist({ email }),
+        message: 'Адрес электронной почты уже используется',
+      },
+    },
+    username: {
+      type: String,
+      validate: {
+        validator: (username) => User.doesNotExist({ username }),
+        message: 'Имя пользователя уже занято',
+      },
+    },
+    password: {
+      type: String,
+    },
+    code: {
+      type: String,
+    },
   },
-  username: {
-    type: String,
-    validate: {
-      validator: username => User.doesNotExist({ username }),
-      message: "Имя пользователя уже занято"
-    }
-  },
-  password: {
-    type: String
-  },
-  code: {
-    type: String
-  }
-}, { timestamps: true });
+  { timestamps: true },
+);
 
 UserSchema.pre('save', function () {
   if (this.isModified('password')) {
@@ -31,7 +34,7 @@ UserSchema.pre('save', function () {
 });
 
 UserSchema.statics.doesNotExist = async function (field) {
-  return await this.where(field).countDocuments() === 0;
+  return (await this.where(field).countDocuments()) === 0;
 };
 
 UserSchema.methods.comparePasswords = function (password) {

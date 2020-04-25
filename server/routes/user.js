@@ -2,26 +2,27 @@ const Joi = require('joi');
 const express = require('express');
 const User = require('../models/user-model');
 const validation = require('../validations/user');
-const additions = require("../util/helpers");
+const additions = require('../util/helpers');
 require('dotenv').config();
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 
 const userRouter = express.Router();
+
 userRouter.post('/sendemail', async (req, res) => {
   try {
-    const { email, username, password } = req.body;
-    const user = await User.findOne({ $or: [ {email: email}, {username: username} ] });
+    const { email, username, password, code } = req.body;
+    await Joi.validate({ email, username, password }, validation.signUp);
+    const user = await User.findOne({ $or: [{ email: email }, { username: username }] });
     if (!user) {
-      await Joi.validate({email, username, password}, validation.signUp);
       const transporter = nodemailer.createTransport({
         host: 'smtp.yandex.ru',
         port: 465,
         secure: true, // true for 465, false for other ports
         auth: {
           user: process.env.EMAILLOGIN,
-          pass: process.env.EMAILPASS
-        }
+          pass: process.env.EMAILPASS,
+        },
       });
 
       const code = crypto.randomBytes(10).toString('hex');
@@ -31,35 +32,42 @@ userRouter.post('/sendemail', async (req, res) => {
         from: process.env.BOTEMAIL, // sender address
         to: email, // list of receivers
         subject: 'Проверочный код', // Subject line
-        text: 'Проверочный код: ' + code // plain text body
+        text: 'Проверочный код: ' + code, // plain text body
       });
-      const newUser = new User({email: email, code: code});
+      const newUser = new User({ email: email, code: code });
       await newUser.save();
       res.status(400).json({
-        message: 'Письмо с кодом подтверждения отправлено!'
-      })
+        message: 'Письмо с кодом подтверждения отправлено!',
+      });
     }
-    else res.status(400).json({
-      message: 'Email или username уже используются!'
-    })
+    if (user && code === '') {
+      res.status(400).json({
+        message: 'Email или username уже используются!',
+      });
+    }
   } catch (err) {
     res.status(400).send(additions.parseError(err));
   }
 });
 
-userRouter.post("/signup", async (req, res) => {
+userRouter.post('/signup', async (req, res) => {
   try {
     const { email, username, password, code } = req.body;
     const user = await User.findOne({ email: email, code: code });
     if (user) {
-      await User.findOneAndDelete({email: email});
+      await User.findOneAndDelete({ email: email });
       await Joi.validate({ email, username, password }, validation.signUp);
-      const newUser = new User({email, username, password});
+      const newUser = new User({ email, username, password });
       const sessionUser = additions.sessionizeUser(newUser);
       await newUser.save();
-
-      req.session.user = sessionUser
+      req.session.user = sessionUser;
       res.send(sessionUser);
+    }
+    const checkUser = await User.findOne({ email: email });
+    if (!user && checkUser && code !== '') {
+      res.status(400).json({
+        message: 'Проверьте введенный проверочный код!',
+      });
     }
   } catch (err) {
     res.status(400).send(additions.parseError(err));

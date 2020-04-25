@@ -4,5 +4,5 @@ import session from "./session/session";
 
 export default combineReducers({
   session,
-  errors
+  errors,
 });

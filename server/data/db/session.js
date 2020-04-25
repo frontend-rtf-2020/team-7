@@ -9,6 +9,6 @@ module.exports = session({
   saveUninitialized: false,
   store: new MongoStore({
     url: process.env.MONGODB_URI,
-    collection: 'sessions'
-  })
+    collection: 'sessions',
+  }),
 });
