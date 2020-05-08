@@ -28,8 +28,7 @@ const Signup = ({ errors, signup, sendemail }) => {
   return (
     <div className="box">
       <form onSubmit={handleSubmit}>
-        <span className="text-center">signup</span>
-        <span className="eror-text">{errors}</span>
+        <span className="text-center">регистрация</span>
         <div className="input-container">
           <input type="email" name="email" />
           <label>Email:</label>
@@ -43,9 +42,7 @@ const Signup = ({ errors, signup, sendemail }) => {
           <label>Password:</label>
         </div>
         <input type="submit" value="Отправить код" />
-        <br></br>
-        <br></br>
-        <br></br>
+        <span className="error-text">{errors}</span>
         <div className="input-container">
           <input type="text" name="code" />
           <label>Проверочный код:</label>
@@ -53,8 +50,10 @@ const Signup = ({ errors, signup, sendemail }) => {
         <input type="submit" value="Зарегистрироваться" />
       </form>
       <br></br>
-      <label className="label-text">Уже существует аккаунт ?</label>
-      <Link to="/login">Авторизоваться</Link>
+      <label className="label-text">Уже существует аккаунт?
+        <Link to="/login">Авторизоваться</Link>
+      </label>
+
     </div>
   );
 };

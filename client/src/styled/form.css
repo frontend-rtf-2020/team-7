@@ -1,57 +1,78 @@
 .text-center{
     color:#fff;
+    background: linear-gradient(45deg, rgb(29, 139, 178), rgb(7, 65, 134));
     text-transform:uppercase;
     font-size: 23px;
-    margin: -50px 0 80px 0;
+    font-family: 'Lucida Grande', 'Montserrat', sans-serif;;
+    margin: -70px 0 0;
     display: block;
     text-align: center;
+    border-radius: 10px;
+    padding: 10px 0;
+    width: 100%;
 }
-.eror-text{
-    color:#fff;
-    font-size: 16px;
-    margin: -50px 0 40px 0;
+.error-text{
+    color:#FB0023;
+    font-size: 20px;
+    margin: 25px 0 40px 0;
     display: block;
     text-align: center;
+    font-family: 'Lucida Grande', 'Montserrat', sans-serif;
 }
 .label-text{
-    color:#fff;
-    font-size: 12px;
+    display: inline-block;
+    color:rgb(0, 93, 129);
+    font-size: 20px;
+    margin: 0 20%;
+    text-align: center;
+    font-family: 'Lucida Grande', 'Montserrat', sans-serif;
 }
 .box{
-    position:absolute;
-    left:50%;
-    top:50%;
-    transform: translate(-50%,-50%);
-    background-color: rgba(0, 0, 0, 0.89);
-    border-radius:3px;
-    padding:70px 100px;
+     position:absolute;
+     left:50%;
+     top:50%;
+     transform: translate(-50%,-50%);
+     background-color: rgb(147, 236, 241);
+     border-radius: 10px;
+     padding: 70px 0px;
+     width: 30%
+ }
+.home{
+    margin-top: 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
 }
 .input-container{
     position:relative;
-    margin-bottom:25px;
 }
 .input-container label{
     position:absolute;
     top:0px;
     left:0px;
-    font-size:16px;
-    color:#fff;
+    font-size:20px;
+    font-family: 'Lucida Grande', 'Montserrat', sans-serif;
+    color: rgb(0, 93, 129);
     pointer-event:none;
     transition: all 0.5s ease-in-out;
+    margin: 25px 10% 0;
 }
 .input-container input{
     border:0;
-    border-bottom:1px solid #555;
+    border-bottom:1px solid #008990;
     background:transparent;
-    width:100%;
-    padding:8px 0 5px 0;
+    border-radius: 10px;
+    width:80%;
+    padding:8px 0 5px 5px;
     font-size:16px;
-    color:#fff;
+    color:#000;
+    background: rgb(255, 255, 170);
+    margin: 50px 10% 0;
 }
 .input-container input:focus{
     border:none;
     outline:none;
-    border-bottom:1px solid #e74c3c;
+    border-bottom:1px solid #FF7600;
 }
 .btn{
     color:#fff;
@@ -78,6 +99,6 @@
 .input-container input:focus ~ label,
 .input-container input:valid ~ label{
     top:-12px;
-    font-size:12px;
+    font-size:20px;
 
 }

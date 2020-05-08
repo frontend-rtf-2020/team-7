@@ -1,5 +1,6 @@
-a {
+a.input-container {
   text-decoration: none;
+  text-align: center;
   outline: none;
   display: inline-block;
   padding: 12px 30px;
@@ -8,16 +9,28 @@ a {
   background-image: linear-gradient(45deg, #6ab1d7 0%, #33d9de 50%, #002878 100%);
   background-position: 100% 0;
   background-size: 200% 200%;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 10px;
+  font-family: 'Lucida Grande', 'Montserrat', sans-serif;
+  font-size: 23px;
   font-weight: 300;
   color: white;
   box-shadow: 0 16px 32px 0 rgba(0,40,120,.35);
   transition: .5s;
 }
-a:hover {
+a.input-container:hover {
   box-shadow: 0 0 0 0 rgba(0,40,120,0);
   background-position: 0 0;
+  cursor: default;
+  text-decoration: none;
+}
+a{
+  font-family: 'Lucida Grande', 'Montserrat', sans-serif;
+  font-size: 20px;
+  color: #4D67F3;
+  text-decoration: none;
+  margin: 0 10%;
+}
+a:hover{
+  text-decoration: underline;
 }
 
 button {
@@ -30,7 +43,7 @@ button {
   background-image: linear-gradient(45deg, #6ab1d7 0%, #33d9de 50%, #002878 100%);
   background-position: 100% 0;
   background-size: 200% 200%;
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Lucida Grande', 'Montserrat', sans-serif;
   font-size: 10px;
   font-weight: 300;
   color: white;
@@ -47,13 +60,13 @@ input[type=submit] {
   outline: none;
   display: inline-block;
   padding: 12px 30px;
-  margin: 10px 10px;
+  margin: 10px 10%;
   border-radius: 30px;
   background-image: linear-gradient(45deg, #6ab1d7 0%, #33d9de 50%, #002878 100%);
   background-position: 100% 0;
   background-size: 200% 200%;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 10px;
+  font-family: 'Lucida Grande' ,'Montserrat', sans-serif;
+  font-size: 20px;
   font-weight: 300;
   color: white;
   box-shadow: 0 16px 32px 0 rgba(0,40,120,.35);
