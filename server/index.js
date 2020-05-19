@@ -18,8 +18,10 @@ const cors = require('cors');
     app.use('/api', apiRouter);
     const userRoutes = require('./routes/user');
     const sessionRoutes = require('./routes/session');
+    const chatRoutes = require('./routes/chat');
     apiRouter.use('/users', userRoutes);
     apiRouter.use('/session', sessionRoutes);
+    apiRouter.use('/chat', chatRoutes);
     const path = require('path');
     app.use(express.static(path.join(__dirname, 'client')));
     app.get('/*', function (req, res) {

@@ -16,10 +16,10 @@ const Signup = ({ errors, signup, sendemail }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const user = {
-      email: e.target[0].value,
-      username: e.target[1].value,
-      password: e.target[2].value,
-      code: e.target[4].value,
+      email: e.target.email.value,
+      username: e.target.username.value,
+      password: e.target.password.value,
+      code: e.target.code.value,
     };
     signup(user);
     sendemail(user);

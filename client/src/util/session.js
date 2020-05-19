@@ -25,6 +25,42 @@ export const signup = (user) =>
     },
   });
 
+export const saveMessage = (mes) =>
+  fetch("api/chat/saveMessage", {
+    method: "POST",
+    body: JSON.stringify(mes),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+export const chatList = (user) =>
+  fetch("api/chat/chatList", {
+    method: "POST",
+    body: JSON.stringify(user),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+export const messageList = (user) =>
+  fetch("api/chat/messageList", {
+    method: "POST",
+    body: JSON.stringify(user),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+export const allUsers = (user) =>
+  fetch("api/chat/allUsers", {
+    method: "POST",
+    body: JSON.stringify(user),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
 export const logout = () => fetch("api/session/logout", { method: "DELETE" });
 
 export const checkLoggedIn = async () => {

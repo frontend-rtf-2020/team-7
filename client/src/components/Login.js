@@ -16,10 +16,9 @@ const Login = ({ errors, login }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const user = {
-      emailOrUsername: e.target[0].value,
-      password: e.target[1].value,
+      emailOrUsername: e.target.emailOrUsername.value,
+      password: e.target.password.value,
     };
-
     login(user);
   };
 
