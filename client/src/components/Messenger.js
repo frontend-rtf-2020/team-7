@@ -8,7 +8,6 @@ import {
   allUsers,
 } from "../actions/session";
 import "../styled/chat.css";
-import index from "styled-components/dist/styled-components-macro.esm";
 
 const mapStateToProps = ({ session, usersList, chatShow, getAllUsers }) => ({
   session,
@@ -73,7 +72,7 @@ const Messenger = ({
   }
   function Messages() {
     const listMessages = chatShow.map((message) => (
-      <ul key={index}>{message}</ul>
+      <ul>{message}</ul>
     ));
     return <div>{listMessages}</div>;
   }

@@ -5,7 +5,8 @@ const cors = require('cors');
   try {
     const app = express();
     const session = require('./data/db/session');
-    const db = require('./data/db/usersDatabase');
+    const usersDB = require('./data/db/usersDatabase');
+    const messagesDb = require('./data/db/messages');
     app.use(express.urlencoded({ extended: true }));
     app.use(express.json());
     app.use(session);
