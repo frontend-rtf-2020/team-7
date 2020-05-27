@@ -1,4 +1,29 @@
-.inline{
+.inline {
     display: inline;
     margin-right: 20%;
+}
+.inline-block {
+    display:inline-block;
+}
+.chatForm {
+    float: left;
+    width:900px;
+    height:650px;
+    background: #fff;
+    border: 1px solid #C1C1C1;
+}
+.messagesForm {
+    width:900px;
+    height:450px;
+    background: #fff;
+    border: 1px solid #C1C1C1;
+    overflow: auto;
+}
+.usersForm {
+    float: left;
+    width:200px;
+    height:650px;
+    background: #fff;
+    border: 1px solid #C1C1C1;
+    overflow: auto;
 }
