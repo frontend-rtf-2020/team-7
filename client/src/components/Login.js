@@ -25,8 +25,8 @@ const Login = ({ errors, login }) => {
   return (
     <div className="box">
       <form onSubmit={handleSubmit}>
-        <span className="text-center">login</span>
-        <span className="eror-text">{errors}</span>
+        <span className="text-center">авторизация</span>
+        <span className="error-text">{errors}</span>
         <div className="input-container">
           <input type="text" name="emailOrUsername" />
           <label>Email или username:</label>
@@ -38,8 +38,9 @@ const Login = ({ errors, login }) => {
         <input type="submit" value="Авторизоваться" />
       </form>
       <br></br>
-      <label className="label-text">Еще не создали аккаунт ?</label>
-      <Link to="/signup">Зарегистрироваться</Link>
+      <label className="label-text">Впервые у нас?
+        <Link to="/signup">Зарегистрироваться</Link>
+      </label>
     </div>
   );
 };
