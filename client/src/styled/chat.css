@@ -3,27 +3,119 @@
     margin-right: 20%;
 }
 .inline-block {
-    display:inline-block;
+    display:flex;
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform: translate(-50%,-50%);
+    background-color: rgb(147, 236, 241);
+    border-radius: 10px;
 }
 .chatForm {
     float: left;
     width:900px;
     height:650px;
-    background: #fff;
-    border: 1px solid #C1C1C1;
+    border-radius: 0 10px 10px 0;
+    background: #6a2fb9;
+    border:4px solid #4c0855;
+}
+.blankChatForm{
+    float: left;
+    width:900px;
+    height:650px;
+    border-radius: 0 10px 10px 0;
+    background: #2a0c53;
+    border:4px solid #4c0855;
 }
 .messagesForm {
-    width:900px;
-    height:450px;
-    background: #fff;
-    border: 1px solid #C1C1C1;
+    width:100%;
+    height:495px;
     overflow: auto;
+    background-color: #2a0c53;
+    border:4px solid #4c0855;
+    border-left: none;
 }
 .usersForm {
     float: left;
     width:200px;
     height:650px;
-    background: #fff;
-    border: 1px solid #C1C1C1;
     overflow: auto;
+    background-color: #1d2e84;
+    border-radius: 10px 0 0 10px;
+    border: 4px solid #4c0855;
+    border-right: none;
+}
+h3 {
+    display: inline-block;
+    color:black;
+    font-size: 20px;
+    text-align: center;
+    font-family: 'Lucida Grande', 'Montserrat', sans-serif;
+    border-radius: 100px;
+    position:relative;
+    left:50%;
+    top:50%;
+    transform: translate(-50%,-50%);
+    background: rgb(255, 255, 170);
+    padding: 5px;
+}
+.msginput {
+    margin: 0 0 0 10px;
+    border:0;
+    border-bottom:1px solid #4c0855;
+    border-radius: 10px;
+    width:90%;
+    padding:8px 0 5px 5px;
+    font-size:16px;
+    color:#000;
+    background: rgb(255, 255, 170);
+}
+input.msgbtn{
+    background-image: url("/arrow.png"), linear-gradient(45deg, #E73A98 0%, #CE0071 50%, #4013AF 100%);
+    background-size: cover;
+    background-position: center;
+    margin: 0 10px;
+}
+input.msgbtn:hover{
+    margin: 0 10px;
+    background-size: cover;
+    background-image:  url("/arrow.png"),linear-gradient(45deg, #E73A98 0%, #E73A98 50%, #CE0071 100%);
+    background-position: center;
+}
+.list-of-users{
+    border-bottom: 4px solid #4c0855;
+    padding: 1.7vh 5px;
+    background: #1d2e84;
+}
+h1{
+    color: #fffe77;
+}
+h2{
+    margin:0;
+    padding: 2vh 25px;
+    display: block;
+    height: 3vh;
+    border-radius: 0 10px 0 0;
+    color: white;
+}
+ul button{
+    margin: 0;
+    border-radius: 0;
+    width: 100%;
+    font-size: 15px;
+    background: #3c52be;
+    box-shadow: none;
+}
+ul{
+    margin: 0;
+    padding: 0;
+    color: white;
+}
+.current-user-btn{
+    background: #b8d5fd;
+    box-shadow: none;
+}
+.msg{
+    display:flex;
+    justify-content: space-between;
 }

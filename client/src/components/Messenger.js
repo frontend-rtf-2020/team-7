@@ -1,40 +1,41 @@
 import React, {useEffect, useState} from "react";
-import { connect } from "react-redux";
+import {connect} from "react-redux";
 import {
-  logout,
-  saveMessage,
-  chatList,
-  messageList,
-  allUsers,
+    logout,
+    saveMessage,
+    chatList,
+    messageList,
+    allUsers,
 } from "../actions/session";
 import "../styled/chat.css";
+import {receiveErrors} from "../actions/error";
 
-const mapStateToProps = ({ session, usersList, chatShow, getAllUsers }) => ({
-  session,
-  usersList,
-  chatShow,
-  getAllUsers,
+const mapStateToProps = ({session, usersList, chatShow, getAllUsers}) => ({
+    session,
+    usersList,
+    chatShow,
+    getAllUsers,
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  logout: () => dispatch(logout()),
-  saveMessage: (mes) => dispatch(saveMessage(mes)),
-  chatList: (user) => dispatch(chatList(user)),
-  messageList: (user) => dispatch(messageList(user)),
-  allUsers: (user) => dispatch(allUsers(user)),
+    logout: () => dispatch(logout()),
+    saveMessage: (mes) => dispatch(saveMessage(mes)),
+    chatList: (user) => dispatch(chatList(user)),
+    messageList: (user) => dispatch(messageList(user)),
+    allUsers: (user) => dispatch(allUsers(user)),
 });
 
 const Messenger = ({
-  logout,
-  session,
-  saveMessage,
-  chatList,
-  usersList,
-  messageList,
-  chatShow,
-  allUsers,
-  getAllUsers,
-}) => {
+                       logout,
+                       session,
+                       saveMessage,
+                       chatList,
+                       usersList,
+                       messageList,
+                       chatShow,
+                       allUsers,
+                       getAllUsers,
+                   }) => {
     const [sendingToCustomer, setSendingToCustomer] = useState("");
     const [temp, setTemp] = useState("");
 
@@ -61,9 +62,13 @@ const Messenger = ({
     }
 
     function Dialogs() {
-        const listDialogs = usersList.map((user) => <ul key={user}>
-            <button key={user} value={user}>{user}</button>
-        </ul>);
+        const listDialogs = usersList.map((user) => {
+            if(user === sendingToCustomer) return <ul key={user}>
+            <button className="current-user-btn" key={user} value={user}>{user}</button>
+        </ul>
+        else return <ul key={user}>
+                <button className="user-btn" key={user} value={user}>{user}</button>
+            </ul>});
         return <div onClick={handleChange}>{listDialogs}</div>;
     }
 
@@ -81,8 +86,7 @@ const Messenger = ({
             listMessages = chatShow.map((message) => (
                 <ul key={Math.random()}>{message}</ul>
             ));
-        }
-        else
+        } else
             listMessages = '';
         return <div>{listMessages}</div>;
     }
@@ -98,7 +102,7 @@ const Messenger = ({
         const listAllUsers = getAllUsers.map((user) => (
             <option key={user} value={user}>{user}</option>
         ));
-        return <select onChange={handleChange}>{listAllUsers}</select>;
+        return <select className="msginput" onChange={handleChange}>{listAllUsers}</select>;
     }
 
     //начальное обновление блоков
@@ -122,34 +126,60 @@ const Messenger = ({
         setTemp(sendingToCustomer)
     }
 
-    return (
-        <form onSubmit={handleSubmit}>
-            <h1 className="inline">{session.username}</h1>
-            <button onClick={logout}>Logout</button>
-            <br/>
-            <div className="inline-block">
-                <div className="chatForm">
-                    <input
-                        type="hidden"
-                        readOnly="readonly"
-                        name="toUser"
-                        value={sendingToCustomer}
-                    />
-                    <h2>Диалог с {sendingToCustomer}</h2>
-                    <div className='messagesForm'>
-                        <Messages/>
+    if (sendingToCustomer === "") {
+        return (
+            <form onSubmit={handleSubmit}>
+                <h1 className="inline">{session.username}</h1>
+                <button onClick={logout}>Logout</button>
+                <br/>
+                <div className="inline-block">
+                    <div className='usersForm'>
+                        <div className="list-of-users">
+                            <ListOfUsers/>
+                        </div>
+                        <Dialogs/>
                     </div>
-                    <br/>
-                    <input type="text" name="message" placeholder="Сообщение"/>
-                    <input type="submit" value="Отправить сообщение"/>
+                    <div className="blankChatForm">
+                        <h3>Выберите, кому хотели бы написать</h3>
+                    </div>
                 </div>
-                <div className='usersForm'>
-                    <ListOfUsers/>
-                    <Dialogs/>
+            </form>
+        );
+    } else {
+        return (
+            <form onSubmit={handleSubmit}>
+                <h1 className="inline">{session.username}</h1>
+                <button onClick={logout}>Logout</button>
+                <br/>
+                <div className="inline-block">
+                    <div className='usersForm'>
+                        <div className="list-of-users">
+                            <ListOfUsers/>
+                        </div>
+                        <Dialogs/>
+                    </div>
+                    <div className="chatForm">
+                        <input
+                            type="hidden"
+                            readOnly="readonly"
+                            name="toUser"
+                            value={sendingToCustomer}
+                        />
+                        <h2>{sendingToCustomer}</h2>
+                        <div className='messagesForm'>
+                            <Messages/>
+                        </div>
+                        <br/>
+                        <div className="msg">
+                            <input className="msginput" type="text" name="message" placeholder="Сообщение"/>
+                            <input className="msgbtn" type="submit" value=""/>
+                        </div>
+                    </div>
+
                 </div>
-            </div>
-        </form>
-    );
+            </form>
+        );
+    }
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Messenger);
