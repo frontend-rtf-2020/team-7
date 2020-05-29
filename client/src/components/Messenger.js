@@ -8,7 +8,6 @@ import {
     allUsers,
 } from "../actions/session";
 import "../styled/chat.css";
-import {receiveErrors} from "../actions/error";
 
 const mapStateToProps = ({session, usersList, chatShow, getAllUsers}) => ({
     session,
