@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import {
   logout,
@@ -35,121 +35,193 @@ const Messenger = ({
   allUsers,
   getAllUsers,
 }) => {
-    const [sendingToCustomer, setSendingToCustomer] = useState("");
-    const [temp, setTemp] = useState("");
+  const [sendingToCustomer, setSendingToCustomer] = useState("");
+  const [tempForSendToCustomer, setTempForSendToCustomer] = useState(""); //переменная для обновления поля
+  const [searchField, setSearchField] = useState("");
+  const [tempForSearchField, setTempForSearchField] = useState(""); //переменная для обновления поля
+  const [listOfAllUsers, setListOfAllUsers] = useState([]);
 
-    const handleChange = (event) => {
-        setSendingToCustomer(event.target.value);
+  const handleSearch = (e) => {
+    setSearchField(e.target.value);
+  };
+
+  const handleChange = (e) => {
+    setSendingToCustomer(e.target.value);
+  };
+
+  //отключение кнопки enter
+  const pressEnter = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const mes = {
+      fromUser: session.username,
+      toUser: sendingToCustomer,
+      message: e.target.message.value,
     };
+    saveMessage(mes);
+    e.target.message.value = "";
+  };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        const mes = {
-            fromUser: session.username,
-            toUser: e.target.toUser.value,
-            message: e.target.message.value,
-        };
-        saveMessage(mes);
-        e.target.message.value = "";
+  //список активных диалогов
+  function updateDialogs() {
+    const currentUser = {
+      fromUser: session.username,
     };
+    chatList(currentUser);
+  }
 
-    function updateDialogs() {
-        const currentUser = {
-            fromUser: session.username,
-        };
-        chatList(currentUser);
-    }
+  function Dialogs() {
+    return usersOutput(usersList);
+  }
 
-    function Dialogs() {
-        const listDialogs = usersList.map((user) => <ul key={user}>
-            <button key={user} value={user}>{user}</button>
-        </ul>);
-        return <div onClick={handleChange}>{listDialogs}</div>;
-    }
+  //все пользователи чата
+  function updateListOfUsers() {
+    const currentUser = {
+      username: session.username,
+    };
+    allUsers(currentUser);
+  }
 
-    function updateMessages() {
-        const dialog = {
-            fromUser: session.username,
-            toUser: sendingToCustomer,
-        };
-        messageList(dialog);
-    }
+  function ListOfUsers() {
+    return usersOutput(listOfAllUsers);
+  }
 
-    function Messages() {
-        let listMessages;
-        if (sendingToCustomer !== '') {
-            listMessages = chatShow.map((message) => (
-                <ul key={Math.random()}>{message}</ul>
-            ));
-        }
-        else
-            listMessages = '';
-        return <div>{listMessages}</div>;
-    }
-
-    function updateListOfUsers() {
-        const currentUser = {
-            username: session.username,
-        };
-        allUsers(currentUser);
-    }
-
-    function ListOfUsers() {
-        const listAllUsers = getAllUsers.map((user) => (
-            <option key={user} value={user}>{user}</option>
-        ));
-        return <select onChange={handleChange}>{listAllUsers}</select>;
-    }
-
-    //начальное обновление блоков
-    if (getAllUsers.length === 0 || usersList.length === 0) {
-        setTimeout(() => {
-            updateDialogs() || updateListOfUsers()
-        }, 100);
-    }
-
-    //автоматическое обновление блоков каждые 4 сек
-    useEffect(() => {
-        const interval = setInterval(() => {
-            updateListOfUsers() || updateDialogs() || updateMessages()
-        }, 4000);
-        return () => clearInterval(interval);
+  function usersOutput(element) {
+    const listAllUsers = element.map((user) => {
+      if (user === sendingToCustomer)
+        return (
+          <ul key={user}>
+            <button className="current-user-btn" key={user} value={user}>
+              {user}
+            </button>
+          </ul>
+        );
+      else
+        return (
+          <ul key={user}>
+            <button className="user-btn" key={user} value={user}>
+              {user}
+            </button>
+          </ul>
+        );
     });
+    return <div onClick={handleChange}>{listAllUsers}</div>;
+  }
 
-    //обновление чата при выборе диалога
-    if (temp !== sendingToCustomer) {
-        updateMessages();
-        setTemp(sendingToCustomer)
-    }
+  //список сообщений
+  function updateMessages() {
+    const dialog = {
+      fromUser: session.username,
+      toUser: sendingToCustomer,
+    };
+    messageList(dialog);
+  }
 
+  function Messages() {
+    const listMessages = chatShow.map((message) => (
+      <ul key={Math.random()}>{message}</ul>
+    ));
+    return <div>{listMessages}</div>;
+  }
+
+  //начальное обновление блоков
+  if (getAllUsers.length === 0) {
+    setTimeout(() => {
+      updateDialogs() || updateListOfUsers();
+    }, 100);
+  }
+
+  //обновление чата при выборе диалога
+  if (tempForSendToCustomer !== sendingToCustomer) {
+    updateMessages();
+    setTempForSendToCustomer(sendingToCustomer);
+  }
+
+  //обновление поиска при вводе
+  if (tempForSearchField !== searchField) {
+    let list = [];
+    if (searchField !== "") {
+      for (let i = 0; i < getAllUsers.length; i++) {
+        if (getAllUsers[i].toLowerCase().includes(searchField.toLowerCase()))
+          list.push(getAllUsers[i]);
+      }
+      setListOfAllUsers(list);
+    } else setListOfAllUsers(list);
+    setTempForSearchField(searchField);
+  }
+
+  //автоматическое обновление блоков каждую секунду
+  useEffect(() => {
+    const interval = setInterval(() => {
+      updateListOfUsers() || updateDialogs() || updateMessages();
+    }, 1000);
+    return () => clearInterval(interval);
+  });
+
+  if (sendingToCustomer === "") {
     return (
-        <form onSubmit={handleSubmit}>
-            <h1 className="inline">{session.username}</h1>
-            <button onClick={logout}>Logout</button>
-            <br/>
-            <div className="inline-block">
-                <div className="chatForm">
-                    <input
-                        type="hidden"
-                        readOnly="readonly"
-                        name="toUser"
-                        value={sendingToCustomer}
-                    />
-                    <h2>Диалог с {sendingToCustomer}</h2>
-                    <div className='messagesForm'>
-                        <Messages/>
-                    </div>
-                    <br/>
-                    <input type="text" name="message" placeholder="Сообщение"/>
-                    <input type="submit" value="Отправить сообщение"/>
-                </div>
-                <div className='usersForm'>
-                    <ListOfUsers/>
-                    <Dialogs/>
-                </div>
+      <form>
+        <h1 className="inline">{session.username}</h1>
+        <button onClick={logout}>Logout</button>
+        <br />
+        <div className="inline-block">
+          <div className="usersForm">
+            <div className="list-of-users">
+              <h3>Поиск пользователей чата</h3>
+              <input type="text" onChange={handleSearch} />
+              <ListOfUsers />
             </div>
-        </form>
+            <h3>Активные диалоги</h3>
+            <Dialogs />
+          </div>
+          <div className="blankChatForm">
+            <h3>Выберите, кому хотели бы написать</h3>
+          </div>
+        </div>
+      </form>
     );
+  } else {
+    return (
+      <form onSubmit={handleSubmit}>
+        <h1 className="inline">{session.username}</h1>
+        <button onClick={logout}>Logout</button>
+        <br />
+        <div className="inline-block">
+          <div className="usersForm">
+            <div className="list-of-users">
+              <h3>Поиск пользователей чата</h3>
+              <input type="text" onChange={handleSearch} />
+              <ListOfUsers />
+            </div>
+            <h3>Активные диалоги</h3>
+            <Dialogs />
+          </div>
+          <div className="chatForm">
+            <h2>{sendingToCustomer}</h2>
+            <div className="messagesForm">
+              <Messages />
+            </div>
+            <br />
+            <div className="msg">
+              <input
+                className="msginput"
+                type="text"
+                name="message"
+                placeholder="Сообщение"
+                onKeyPress={pressEnter}
+              />
+              <input className="msgbtn" type="submit" value="" />
+            </div>
+          </div>
+        </div>
+      </form>
+    );
+  }
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Messenger);
