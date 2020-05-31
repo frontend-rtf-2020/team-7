@@ -1,1 +1,7 @@
-body {background:url(https://html5book.ru/wp-content/uploads/2015/10/background54.png)}
+/*body {background:url(https://html5book.ru/wp-content/uploads/2015/10/background54.png)}*/
+body{
+    /*background: url("/retroback.jpg");*/
+    /*background-size: 100%;*/
+    background: url("/retroback.jpg");
+    background-position: center 0;
+}
