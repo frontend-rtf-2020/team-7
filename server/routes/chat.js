@@ -47,7 +47,7 @@ chatRouter.post('/messageList', async (req, res) => {
       if (str.includes("{ fromUser: '" + fromUser))
         str = str.replace(/{[\w\s,:']*message:\s*'/i, fromUser + ':  ');
       else str = str.replace(/{[\w\s,:']*message:\s*'/i, toUser + ':  ');
-      str = str.replace("' }", '');
+      str = str.replace(/'\s*}/i, '');
       list.push(str);
     }
     if (list.length === 0) list.push('Список сообщений пуст');
@@ -66,6 +66,18 @@ chatRouter.post('/allUsers', async (req, res) => {
     if (str !== username) list.push(str);
   }
   res.send(JSON.stringify(list));
+});
+
+chatRouter.post('/deleteDialog', async (req, res) => {
+  const { fromUser, toUser } = req.body;
+  await Chat.deleteMany(
+      {
+        $or: [
+          { fromUser: fromUser, toUser: toUser },
+          { fromUser: toUser, toUser: fromUser },
+        ],
+      }
+  )
 });
 
 module.exports = chatRouter;

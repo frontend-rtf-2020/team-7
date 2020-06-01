@@ -38,7 +38,8 @@ const Login = ({ errors, login }) => {
         <input type="submit" value="Авторизоваться" />
       </form>
       <br></br>
-      <label className="label-text">Впервые у нас?
+      <label className="label-text">
+        Впервые у нас?
         <Link to="/signup">Зарегистрироваться</Link>
       </label>
     </div>

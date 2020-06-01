@@ -92,3 +92,7 @@ export const allUsers = (user) => async (dispatch) => {
   const data = await response.json();
   return dispatch(receiveAllUsers(data));
 };
+
+export const deleteDialog = (user) => async () => {
+  await apiUtil.deleteDialog(user);
+};

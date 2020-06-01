@@ -50,10 +50,10 @@ const Signup = ({ errors, signup, sendemail }) => {
         <input type="submit" value="Зарегистрироваться" />
       </form>
       <br></br>
-      <label className="label-text">Уже существует аккаунт?
+      <label className="label-text">
+        Уже существует аккаунт?
         <Link to="/login">Авторизоваться</Link>
       </label>
-
     </div>
   );
 };

@@ -6,6 +6,7 @@ import {
   chatList,
   messageList,
   allUsers,
+  deleteDialog,
 } from "../actions/session";
 import "../styled/chat.css";
 
@@ -22,19 +23,21 @@ const mapDispatchToProps = (dispatch) => ({
   chatList: (user) => dispatch(chatList(user)),
   messageList: (user) => dispatch(messageList(user)),
   allUsers: (user) => dispatch(allUsers(user)),
+  deleteDialog: (user) => dispatch(deleteDialog(user)),
 });
 
 const Messenger = ({
-  logout,
-  session,
-  saveMessage,
-  chatList,
-  usersList,
-  messageList,
-  chatShow,
-  allUsers,
-  getAllUsers,
-}) => {
+                     logout,
+                     session,
+                     saveMessage,
+                     chatList,
+                     usersList,
+                     messageList,
+                     chatShow,
+                     allUsers,
+                     getAllUsers,
+                     deleteDialog,
+                   }) => {
   const [sendingToCustomer, setSendingToCustomer] = useState("");
   const [tempForSendToCustomer, setTempForSendToCustomer] = useState(""); //переменная для обновления поля
   const [searchField, setSearchField] = useState("");
@@ -65,6 +68,15 @@ const Messenger = ({
     };
     saveMessage(mes);
     e.target.message.value = "";
+  };
+
+  //удаление диалога
+  function handleDeleteDialog() {
+    const dialog = {
+      fromUser: session.username,
+      toUser: sendingToCustomer,
+    };
+    deleteDialog(dialog);
   };
 
   //список активных диалогов
@@ -202,7 +214,7 @@ const Messenger = ({
             <Dialogs />
           </div>
           <div className="chatForm">
-            <h2>{sendingToCustomer}</h2>
+            <h2>{sendingToCustomer}<button onClick={handleDeleteDialog}>Удалить диалог</button></h2>
             <div className="messagesForm">
               <Messages />
             </div>
