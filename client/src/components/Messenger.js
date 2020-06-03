@@ -27,22 +27,26 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 const Messenger = ({
-                     logout,
-                     session,
-                     saveMessage,
-                     chatList,
-                     usersList,
-                     messageList,
-                     chatShow,
-                     allUsers,
-                     getAllUsers,
-                     deleteDialog,
-                   }) => {
+  logout,
+  session,
+  saveMessage,
+  chatList,
+  usersList,
+  messageList,
+  chatShow,
+  allUsers,
+  getAllUsers,
+  deleteDialog,
+}) => {
   const [sendingToCustomer, setSendingToCustomer] = useState("");
   const [tempForSendToCustomer, setTempForSendToCustomer] = useState(""); //переменная для обновления поля
+  const [messageField, setMessageField] = useState("");
   const [searchField, setSearchField] = useState("");
   const [tempForSearchField, setTempForSearchField] = useState(""); //переменная для обновления поля
-  const [listOfAllUsers, setListOfAllUsers] = useState([]);
+  const [listOfAllUsers, setListOfAllUsers] = useState([]); //никнеймы подходящие под поле поиска
+  const [room, setRoom] = useState(""); //групповой чат
+  const [openCreating, setOpenCreating] = useState(""); //переменная для создания группового чата
+  const [groupChat, setGroupChat] = useState([]);
 
   const handleSearch = (e) => {
     setSearchField(e.target.value);
@@ -50,6 +54,20 @@ const Messenger = ({
 
   const handleChange = (e) => {
     setSendingToCustomer(e.target.value);
+    setOpenCreating("");
+  };
+
+  const handleMessageField = (e) => {
+    setMessageField(e.target.value);
+  };
+
+  const handleChosen = (e) => {
+    let list = [];
+    if (groupChat.length !== 0) {
+      for (let i = 0; i < groupChat.length; i++) list.push(groupChat[i]);
+    }
+    list.push(e.target.value);
+    setGroupChat(list);
   };
 
   //отключение кнопки enter
@@ -64,19 +82,40 @@ const Messenger = ({
     const mes = {
       fromUser: session.username,
       toUser: sendingToCustomer,
-      message: e.target.message.value,
+      message: messageField,
     };
     saveMessage(mes);
-    e.target.message.value = "";
+    setMessageField("");
   };
 
   //удаление диалога
-  function handleDeleteDialog() {
+  const handleDeleteDialog = (e) => {
+    e.preventDefault();
     const dialog = {
       fromUser: session.username,
       toUser: sendingToCustomer,
     };
     deleteDialog(dialog);
+  };
+
+  const handleCreateGroupChat = (e) => {
+    e.preventDefault();
+    setOpenCreating("true");
+  };
+
+  const createGroupChat = (e) => {
+    e.preventDefault();
+    let str = groupChat;
+    str.unshift(session.username);
+    str = str.toString().replace(/,/g, ", ");
+    setSendingToCustomer(str);
+    setOpenCreating("");
+  };
+
+  const cancellation = (e) => {
+    e.preventDefault();
+    setGroupChat([]);
+    setOpenCreating("");
   };
 
   //список активных диалогов
@@ -125,6 +164,42 @@ const Messenger = ({
     return <div onClick={handleChange}>{listAllUsers}</div>;
   }
 
+  function ChooseUsersForGroupChat() {
+    const listAllUsers = getAllUsers.map((user) => (
+      <ul key={user}>
+        <button className="user-btn" key={user} value={user}>
+          {user}
+        </button>
+      </ul>
+    ));
+    return <div onClick={handleChosen}>{listAllUsers}</div>;
+  }
+
+  function ChosenUsers() {
+    const listAllUsers = groupChat.map((user) => (
+      <ul key={user}>
+        <button className="user-btn" key={user} value={user}>
+          {user}
+        </button>
+      </ul>
+    ));
+    return <div onClick={handleChosen}>{listAllUsers}</div>;
+  }
+
+  function GroupChat() {
+    let element = sendingToCustomer.split(", ");
+    for (let i = 0; i < element.length; i++)
+      if (element[i] === session.username) element.splice(i, 1);
+    const listAllUsers = element.map((user) => (
+      <ul key={user}>
+        <button className="user-btn" key={user} value={user}>
+          {user}
+        </button>
+      </ul>
+    ));
+    return <div onClick={handleChange}>{listAllUsers}</div>;
+  }
+
   //список сообщений
   function updateMessages() {
     const dialog = {
@@ -152,6 +227,9 @@ const Messenger = ({
   if (tempForSendToCustomer !== sendingToCustomer) {
     updateMessages();
     setTempForSendToCustomer(sendingToCustomer);
+    if (sendingToCustomer.split(", ").length > 1) {
+      setRoom(sendingToCustomer);
+    } else setRoom("");
   }
 
   //обновление поиска при вводе
@@ -175,46 +253,65 @@ const Messenger = ({
     return () => clearInterval(interval);
   });
 
-  if (sendingToCustomer === "") {
-    return (
-      <form>
-        <h1 className="inline">{session.username}</h1>
-        <button onClick={logout}>Logout</button>
-        <br />
-        <div className="inline-block">
-          <div className="usersForm">
-            <div className="list-of-users">
-              <h3>Поиск пользователей чата</h3>
-              <input type="text" onChange={handleSearch} />
-              <ListOfUsers />
-            </div>
-            <h3>Активные диалоги</h3>
-            <Dialogs />
+  return (
+    <form>
+      <h1 className="inline">{session.username}</h1>
+      <button onClick={logout}>Logout</button>
+      <br />
+      <div className="inline-block">
+        <div className="usersForm">
+          <div className="list-of-users">
+            <h3>Поиск пользователей чата</h3>
+            <input type="text" onChange={handleSearch} />
+            <ListOfUsers />
           </div>
+          <button onClick={handleCreateGroupChat}>Создать груповой чат</button>
+          <h3>Активные диалоги</h3>
+          <Dialogs />
+        </div>
+        {sendingToCustomer === "" && openCreating === "" && (
           <div className="blankChatForm">
             <h3>Выберите, кому хотели бы написать</h3>
           </div>
-        </div>
-      </form>
-    );
-  } else {
-    return (
-      <form onSubmit={handleSubmit}>
-        <h1 className="inline">{session.username}</h1>
-        <button onClick={logout}>Logout</button>
-        <br />
-        <div className="inline-block">
-          <div className="usersForm">
-            <div className="list-of-users">
-              <h3>Поиск пользователей чата</h3>
-              <input type="text" onChange={handleSearch} />
-              <ListOfUsers />
+        )}
+        {room !== "" && openCreating === "" && (
+          <div className="right-pos">
+            <div className="chatForm">
+              <h2>{sendingToCustomer}</h2>
+              <div className="messagesForm">
+                <Messages />
+              </div>
+              <br />
+              <div className="msg">
+                <input
+                  className="msginput"
+                  type="text"
+                  name="message"
+                  placeholder="Сообщение"
+                  value={messageField}
+                  onChange={handleMessageField}
+                  onKeyPress={pressEnter}
+                />
+                <input
+                  className="msgbtn"
+                  type="submit"
+                  onClick={handleSubmit}
+                  value=""
+                />
+              </div>
             </div>
-            <h3>Активные диалоги</h3>
-            <Dialogs />
+            <div className="usersForm">
+              <h3>Участники чата</h3>
+              <GroupChat />
+            </div>
           </div>
+        )}
+        {room === "" && sendingToCustomer !== "" && openCreating === "" && (
           <div className="chatForm">
-            <h2>{sendingToCustomer}<button onClick={handleDeleteDialog}>Удалить диалог</button></h2>
+            <h2>
+              {sendingToCustomer}
+              <button onClick={handleDeleteDialog}>Удалить диалог</button>
+            </h2>
             <div className="messagesForm">
               <Messages />
             </div>
@@ -225,15 +322,34 @@ const Messenger = ({
                 type="text"
                 name="message"
                 placeholder="Сообщение"
+                value={messageField}
+                onChange={handleMessageField}
                 onKeyPress={pressEnter}
               />
-              <input className="msgbtn" type="submit" value="" />
+              <input
+                className="msgbtn"
+                type="submit"
+                onClick={handleSubmit}
+                value=""
+              />
             </div>
           </div>
-        </div>
-      </form>
-    );
-  }
+        )}
+        {openCreating === "true" && (
+          <div className="blankChatForm">
+            <div className="usersForm">
+              <ChooseUsersForGroupChat />
+            </div>
+            <div className="usersForm">
+              <ChosenUsers />
+            </div>
+            <button onClick={createGroupChat}>Подтвердить выбор</button>
+            <button onClick={cancellation}>Отмена</button>
+          </div>
+        )}
+      </div>
+    </form>
+  );
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Messenger);

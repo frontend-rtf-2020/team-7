@@ -62,13 +62,13 @@ export const allUsers = (user) =>
   });
 
 export const deleteDialog = (user) =>
-    fetch("api/chat/deleteDialog", {
-        method: "POST",
-        body: JSON.stringify(user),
-        headers: {
-            "Content-Type": "application/json",
-        },
-    });
+  fetch("api/chat/deleteDialog", {
+    method: "POST",
+    body: JSON.stringify(user),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 
 export const logout = () => fetch("api/session/logout", { method: "DELETE" });
 

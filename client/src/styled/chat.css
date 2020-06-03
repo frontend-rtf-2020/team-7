@@ -119,3 +119,6 @@ ul{
     display:flex;
     justify-content: space-between;
 }
+.right-pos{
+    display: inline-flex;
+}
