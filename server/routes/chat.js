@@ -13,10 +13,10 @@ chatRouter.post('/saveMessage', async (req, res) => {
 });
 
 chatRouter.post('/chatList', async (req, res) => {
-  const { fromUser } = req.body;
-  let users = await Chat.find({ fromUser: fromUser }, 'toUser -_id');
-  let toCurrentUsers = await Chat.find({ toUser: fromUser }, 'fromUser -_id');
-  let groupChat = await Chat.find({ room: /[\w\s]*,/ }, 'room -_id');
+  const {fromUser} = req.body;
+  let users = await Chat.find({fromUser: fromUser}, 'toUser -_id');
+  let toCurrentUsers = await Chat.find({toUser: fromUser}, 'fromUser -_id');
+  let groupChat = await Chat.find({room: /[\w\s]*,/}, 'room -_id');
   let list = [];
   for (let element of users) {
     let str = element.toString();
@@ -36,6 +36,24 @@ chatRouter.post('/chatList', async (req, res) => {
     str = str.replace("' }", '');
     if (!list.includes(str) && str.includes(fromUser)) list.push(str);
   }
+  for (let i = 0; i < list.length; i++) {
+    let lastMessage;
+    if (list[i].split(", ").length === 1)
+      lastMessage = await Chat.find({
+        $or: [
+          {fromUser: fromUser, toUser: list[i]},
+          {fromUser: list[i], toUser: fromUser},
+        ],
+      }, 'fromUser message time -_id').sort({time: -1}).limit(1);
+    else
+      lastMessage = await Chat.find({room: list[i]}, 'fromUser message time -_id').sort({time: -1}).limit(1);
+    lastMessage = lastMessage.toString().replace(/{[\w\s,:']*fromUser:\s*'/i, '\n\n');
+    lastMessage = lastMessage.replace(/'[\w\s,:']*message:\s*'/i, ': ');
+    lastMessage = lastMessage.replace(/'[\s,]*[\s]*time:\s(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):\d{2}.\d{3}Z\s*}/i, '\n$4:$5');
+    if (lastMessage.includes(fromUser + ':'))
+      lastMessage = lastMessage.replace(fromUser + ':', 'Вы:');
+    list[i] += lastMessage
+  }
   res.send(JSON.stringify(list));
 });
 
@@ -49,11 +67,11 @@ chatRouter.post('/messageList', async (req, res) => {
           { fromUser: toUser, toUser: fromUser },
         ],
       },
-      'fromUser message -_id',
+      'time fromUser message -_id',
     ).sort('time');
     res.send(JSON.stringify(parseStr(messages)));
   } else {
-    let messages = await Chat.find({ room: toUser }, 'fromUser message -_id').sort('time');
+    let messages = await Chat.find({ room: toUser }, 'time fromUser message -_id').sort('time');
     res.send(JSON.stringify(parseStr(messages)));
   }
 });
@@ -64,7 +82,7 @@ function parseStr(messages) {
     let str = element.toString();
     str = str.replace(/{[\w\s,:']*fromUser:\s*'/i, '');
     str = str.replace(/'[\w\s,:']*message:\s*'/i, ': ');
-    str = str.replace(/'\s*}/i, '');
+    str = str.replace(/'[\s,]*[\s]*time:\s(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):\d{2}.\d{3}Z\s*}/i, '\n$4:$5\t$3-$2-$1');
     list.push(str);
   }
   if (list.length === 0) list.push('Список сообщений пуст');

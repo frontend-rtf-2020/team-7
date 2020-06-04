@@ -46,14 +46,15 @@ const Messenger = ({
   const [listOfAllUsers, setListOfAllUsers] = useState([]); //никнеймы подходящие под поле поиска
   const [room, setRoom] = useState(""); //групповой чат
   const [openCreating, setOpenCreating] = useState(""); //переменная для создания группового чата
-  const [groupChat, setGroupChat] = useState([]);
+  const [groupChat, setGroupChat] = useState([]); //переменная для выбранных пользователей группового чата
 
   const handleSearch = (e) => {
     setSearchField(e.target.value);
   };
 
-  const handleChange = (e) => {
-    setSendingToCustomer(e.target.value);
+  const handleClick = (e) => {
+    let changeStr = e.target.value.split('\n\n')[0];
+    setSendingToCustomer(changeStr);
     setOpenCreating("");
   };
 
@@ -161,7 +162,7 @@ const Messenger = ({
           </ul>
         );
     });
-    return <div onClick={handleChange}>{listAllUsers}</div>;
+    return <div onClick={handleClick}>{listAllUsers}</div>;
   }
 
   function ChooseUsersForGroupChat() {
@@ -197,7 +198,7 @@ const Messenger = ({
         </button>
       </ul>
     ));
-    return <div onClick={handleChange}>{listAllUsers}</div>;
+    return <div onClick={handleClick}>{listAllUsers}</div>;
   }
 
   //список сообщений
