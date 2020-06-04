@@ -1,14 +1,10 @@
-.inline {
-    display: inline;
-    margin-right: 20%;
-}
 .inline-block {
     display:flex;
+    flex-direction: column;
     position:absolute;
     left:50%;
     top:50%;
     transform: translate(-50%,-50%);
-    background-color: rgb(147, 236, 241);
     border-radius: 10px;
 }
 .chatForm {
@@ -36,6 +32,14 @@
     border-left: none;
     white-space: pre-line;
 }
+.messagesForm > div{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+.messagesForm > div > ul{
+    background: #e8b6ff;
+}
 .usersForm {
     float: left;
     width:200px;
@@ -46,6 +50,20 @@
     border: 4px solid #4c0855;
     border-right: none;
     white-space: pre-line;
+}
+.logout{
+    display: flex;
+    flex-direction: row;
+    background: #4e26be;
+}
+.logout > h1{
+    flex-grow: 1;
+    padding-left: 20px;
+}
+.logout > button{
+}
+.messenger{
+    display: flex;
 }
 h3 {
     display: inline-block;
@@ -86,19 +104,28 @@ input.msgbtn:hover{
 }
 .list-of-users{
     border-bottom: 4px solid #4c0855;
-    padding: 1.7vh 5px;
+    padding: 2.3vh 5px;
     background: #1d2e84;
+}
+.list-of-users > input{
+    margin-left: 7px;
 }
 h1{
     color: #fffe77;
 }
 h2{
-    margin:0;
-    padding: 2vh 25px;
-    display: block;
+    margin:2vh 25px;
+    display: flex;
+    line-height: 3vh;
     height: 3vh;
     border-radius: 0 10px 0 0;
     color: white;
+    justify-content: space-between;
+}
+h2 > button{
+    margin: 0;
+    padding: 0 10px;
+
 }
 ul button{
     margin: 0;

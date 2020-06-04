@@ -234,7 +234,7 @@ const Messenger = ({
     const listMessages = chatShow.map((message) => (
       <ul key={Math.random()}>{message}</ul>
     ));
-    return <div>{listMessages}</div>;
+    return <div className="test">{listMessages}</div>;
   }
 
   //начальное обновление блоков
@@ -275,19 +275,19 @@ const Messenger = ({
   });
 
   return (
-    <form>
-      <h1 className="inline">{session.username}</h1>
-      <button onClick={logout}>Logout</button>
-      <br />
-      <div className="inline-block">
+    <form className="inline-block">
+      <div className="logout">
+        <h1 className="inline">{session.username}</h1>
+        <button onClick={logout}>Logout</button>
+        <br />
+      </div>
+      <div className="messenger">
         <div className="usersForm">
           <div className="list-of-users">
-            <h3>Поиск пользователей чата</h3>
-            <input type="text" onChange={handleSearch} />
+            <input type="text" placeholder="Поиск пользователей" onChange={handleSearch} />
             <ListOfUsers />
           </div>
-          <button onClick={handleCreateGroupChat}>Создать груповой чат</button>
-          <h3>Активные диалоги</h3>
+          <button onClick={handleCreateGroupChat}>Создать беседу</button>
           <Dialogs />
         </div>
         {sendingToCustomer === "" && openCreating === "" && (
