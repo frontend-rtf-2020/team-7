@@ -96,3 +96,7 @@ export const allUsers = (user) => async (dispatch) => {
 export const deleteDialog = (user) => async () => {
   await apiUtil.deleteDialog(user);
 };
+
+export const updateGroupChat = (user) => async () => {
+  await apiUtil.updateGroupChat(user);
+};
