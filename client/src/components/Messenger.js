@@ -61,6 +61,7 @@ const Messenger = ({
     setSendingToCustomer(changeStr);
     setOpenCreating("");
     setOpenAddingUsers('');
+    setGroupChat([]);
   };
 
   const handleMessageField = (e) => {
@@ -110,6 +111,7 @@ const Messenger = ({
     e.preventDefault();
     setOpenCreating("true");
     setOpenAddingUsers('');
+    setGroupChat([]);
   };
 
   //создание группового чата с выбранными пользователями
