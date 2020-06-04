@@ -70,6 +70,15 @@ export const deleteDialog = (user) =>
     },
   });
 
+export const updateGroupChat = (user) =>
+    fetch("api/chat/updateGroupChat", {
+        method: "POST",
+        body: JSON.stringify(user),
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+
 export const logout = () => fetch("api/session/logout", { method: "DELETE" });
 
 export const checkLoggedIn = async () => {
