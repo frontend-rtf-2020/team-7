@@ -114,7 +114,7 @@ chatRouter.post('/deleteDialog', async (req, res) => {
 
 chatRouter.post('/updateGroupChat', async (req, res) => {
   const {toUser, room} = req.body;
-  await Chat.update({room: toUser}, {room: room})
+  await Chat.updateMany({room: toUser}, {room: room})
 });
 
 module.exports = chatRouter;
