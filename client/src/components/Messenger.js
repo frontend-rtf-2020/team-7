@@ -7,6 +7,7 @@ import {
   messageList,
   allUsers,
   deleteDialog,
+  updateGroupChat,
 } from "../actions/session";
 import "../styled/chat.css";
 
@@ -24,20 +25,22 @@ const mapDispatchToProps = (dispatch) => ({
   messageList: (user) => dispatch(messageList(user)),
   allUsers: (user) => dispatch(allUsers(user)),
   deleteDialog: (user) => dispatch(deleteDialog(user)),
+  updateGroupChat: (user) => dispatch(updateGroupChat(user)),
 });
 
 const Messenger = ({
-  logout,
-  session,
-  saveMessage,
-  chatList,
-  usersList,
-  messageList,
-  chatShow,
-  allUsers,
-  getAllUsers,
-  deleteDialog,
-}) => {
+                     logout,
+                     session,
+                     saveMessage,
+                     chatList,
+                     usersList,
+                     messageList,
+                     chatShow,
+                     allUsers,
+                     getAllUsers,
+                     deleteDialog,
+                     updateGroupChat,
+                   }) => {
   const [sendingToCustomer, setSendingToCustomer] = useState("");
   const [tempForSendToCustomer, setTempForSendToCustomer] = useState(""); //переменная для обновления поля
   const [messageField, setMessageField] = useState("");
@@ -47,6 +50,7 @@ const Messenger = ({
   const [room, setRoom] = useState(""); //групповой чат
   const [openCreating, setOpenCreating] = useState(""); //переменная для создания группового чата
   const [groupChat, setGroupChat] = useState([]); //переменная для выбранных пользователей группового чата
+  const [openAddingUsers, setOpenAddingUsers] = useState(""); //переменная для добавления пользователей в групповой чат
 
   const handleSearch = (e) => {
     setSearchField(e.target.value);
@@ -56,6 +60,7 @@ const Messenger = ({
     let changeStr = e.target.value.split('\n\n')[0];
     setSendingToCustomer(changeStr);
     setOpenCreating("");
+    setOpenAddingUsers('');
   };
 
   const handleMessageField = (e) => {
@@ -78,6 +83,7 @@ const Messenger = ({
     }
   };
 
+  //отправка сообщения
   const handleSubmit = (e) => {
     e.preventDefault();
     const mes = {
@@ -99,24 +105,48 @@ const Messenger = ({
     deleteDialog(dialog);
   };
 
+  //открытие окна для создания группового чата
   const handleCreateGroupChat = (e) => {
     e.preventDefault();
     setOpenCreating("true");
+    setOpenAddingUsers('');
   };
 
+  //создание группового чата с выбранными пользователями
   const createGroupChat = (e) => {
     e.preventDefault();
-    let str = groupChat;
-    str.unshift(session.username);
-    str = str.toString().replace(/,/g, ", ");
-    setSendingToCustomer(str);
+    if (openAddingUsers === '') {
+      let str = groupChat;
+      str.unshift(session.username);
+      str = str.toString().replace(/,/g, ", ");
+      setSendingToCustomer(str);
+    }
+    else {
+      let str = room + ', ' + groupChat.toString().replace(/,/g, ", ");
+      const update = {
+        toUser: sendingToCustomer,
+        room: str,
+      };
+      updateGroupChat(update);
+      setSendingToCustomer(str);
+    }
     setOpenCreating("");
+    setOpenAddingUsers('');
   };
 
+  //отмена создания чата или добавления нового пользователя
   const cancellation = (e) => {
     e.preventDefault();
     setGroupChat([]);
     setOpenCreating("");
+    setOpenAddingUsers('');
+  };
+
+  //добавление новых пользователей в чат
+  const addUsersInChat = (e) => {
+    e.preventDefault();
+    setOpenCreating("true");
+    setOpenAddingUsers('true');
   };
 
   //список активных диалогов
@@ -165,40 +195,30 @@ const Messenger = ({
     return <div onClick={handleClick}>{listAllUsers}</div>;
   }
 
+  //список пользователей для создания группового чата или добавления в него
   function ChooseUsersForGroupChat() {
-    const listAllUsers = getAllUsers.map((user) => (
-      <ul key={user}>
-        <button className="user-btn" key={user} value={user}>
-          {user}
-        </button>
-      </ul>
-    ));
-    return <div onClick={handleChosen}>{listAllUsers}</div>;
+    return <div onClick={handleChosen}>{outputForGroupChat(getAllUsers)}</div>;
   }
 
   function ChosenUsers() {
-    const listAllUsers = groupChat.map((user) => (
-      <ul key={user}>
-        <button className="user-btn" key={user} value={user}>
-          {user}
-        </button>
-      </ul>
-    ));
-    return <div onClick={handleChosen}>{listAllUsers}</div>;
+    return <div onClick={handleChosen}>{outputForGroupChat(groupChat)}</div>;
   }
 
   function GroupChat() {
     let element = sendingToCustomer.split(", ");
     for (let i = 0; i < element.length; i++)
       if (element[i] === session.username) element.splice(i, 1);
-    const listAllUsers = element.map((user) => (
-      <ul key={user}>
-        <button className="user-btn" key={user} value={user}>
-          {user}
-        </button>
-      </ul>
+    return <div onClick={handleClick}>{outputForGroupChat(element)}</div>;
+  }
+
+  function outputForGroupChat(element) {
+    return element.map((user) => (
+        <ul key={user}>
+          <button className="user-btn" key={user} value={user}>
+            {user}
+          </button>
+        </ul>
     ));
-    return <div onClick={handleClick}>{listAllUsers}</div>;
   }
 
   //список сообщений
@@ -278,7 +298,10 @@ const Messenger = ({
         {room !== "" && openCreating === "" && (
           <div className="right-pos">
             <div className="chatForm">
-              <h2>{sendingToCustomer}</h2>
+              <h2>
+                {sendingToCustomer}
+                <button onClick={addUsersInChat}>Добавить пользователя в чат</button>
+              </h2>
               <div className="messagesForm">
                 <Messages />
               </div>
