@@ -1,3 +1,5 @@
+import { socket } from "../index";
+
 export const sendemail = (user) =>
   fetch("api/users/sendemail", {
     method: "POST",
@@ -25,59 +27,30 @@ export const signup = (user) =>
     },
   });
 
-export const saveMessage = (mes) =>
-  fetch("api/chat/saveMessage", {
-    method: "POST",
-    body: JSON.stringify(mes),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+export const saveMessage = async (mes) => {
+  //вызываем действие на сервере, передав определенный параметр
+  socket.emit("saveMessage", mes);
+};
 
-export const chatList = (user) =>
-  fetch("api/chat/chatList", {
-    method: "POST",
-    body: JSON.stringify(user),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+export const chatList = async (user) => {
+  socket.emit("chatList", user);
+};
 
-export const messageList = (user) =>
-  fetch("api/chat/messageList", {
-    method: "POST",
-    body: JSON.stringify(user),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+export const messageList = async (user) => {
+  socket.emit("messageList", user);
+};
 
-export const allUsers = (user) =>
-  fetch("api/chat/allUsers", {
-    method: "POST",
-    body: JSON.stringify(user),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+export const allUsers = async (user) => {
+  socket.emit("allUsers", user);
+};
 
-export const deleteDialog = (user) =>
-  fetch("api/chat/deleteDialog", {
-    method: "POST",
-    body: JSON.stringify(user),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+export const deleteDialog = async (user) => {
+  socket.emit("deleteDialog", user);
+};
 
-export const updateGroupChat = (user) =>
-    fetch("api/chat/updateGroupChat", {
-        method: "POST",
-        body: JSON.stringify(user),
-        headers: {
-            "Content-Type": "application/json",
-        },
-    });
+export const updateGroupChat = (user) => {
+  socket.emit("updateGroupChat", user);
+};
 
 export const logout = () => fetch("api/session/logout", { method: "DELETE" });
 

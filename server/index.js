@@ -4,9 +4,18 @@ const cors = require('cors');
 (async () => {
   try {
     const app = express();
+    const http = require('http').createServer(app);
+    const io = require('socket.io')(http);
     const session = require('./data/db/session');
     const usersDB = require('./data/db/usersDatabase');
     const messagesDb = require('./data/db/messages');
+    const chatHub = require('./events/chat'); //необходимый функционал, выполняющий определенные задачи)))))))))) да, написал, как гений
+
+    // используем сессии для socket.io
+    io.use(function (socket, next) {
+      session(socket.request, socket.request.res, next);
+    });
+
     app.use(express.urlencoded({ extended: true }));
     app.use(express.json());
     app.use(session);
@@ -17,18 +26,30 @@ const cors = require('cors');
     );
     const apiRouter = express.Router();
     app.use('/api', apiRouter);
+
     const userRoutes = require('./routes/user');
     const sessionRoutes = require('./routes/session');
-    const chatRoutes = require('./routes/chat');
     apiRouter.use('/users', userRoutes);
     apiRouter.use('/session', sessionRoutes);
-    apiRouter.use('/chat', chatRoutes);
     const path = require('path');
     app.use(express.static(path.join(__dirname, 'client')));
     app.get('/*', function (req, res) {
       res.sendFile(path.join(__dirname, 'client', 'index.html'));
     });
-    app.listen(process.env.PORT || 5000);
+
+    //определяем действие при подключении
+    io.on('connection', (socket) => {
+      console.log('User connected');
+      //действия, которые выполняются при вызове на клиенте
+      socket.on('saveMessage', (message) => chatHub.saveMessage(message));
+      socket.on('chatList', (user) => chatHub.chatList(user, socket));
+      socket.on('messageList', (user) => chatHub.messageList(user, socket));
+      socket.on('allUsers', (user) => chatHub.allUsers(user, socket));
+      socket.on('deleteDialog', (user) => chatHub.deleteDialog(user));
+      socket.on('updateGroupChat', (data) => chatHub.updateGroupChat(data));
+    });
+
+    http.listen(process.env.PORT || 5000);
   } catch (err) {
     console.log(err);
   }
