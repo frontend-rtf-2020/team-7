@@ -87,6 +87,7 @@ function parseStr(messages) {
   if (list.length === 0) list.push('Список сообщений пуст');
   return list;
 }
+
 async function allUsers(user, socket) {
   const { username } = user;
   let users = await User.find({}, 'username -_id').sort('username');
@@ -110,9 +111,12 @@ async function deleteDialog(user){
   });
 }
 
-async function updateGroupChat(data){
+async function updateGroupChat(data) {
   const {toUser, room} = data;
-  await Chat.updateMany({room: toUser}, {room: room})
+  if (toUser !== room && room.trim() !== '')
+    await Chat.updateMany({room: toUser}, {room: room});
+  else
+    await Chat.deleteMany({room: toUser})
 }
 
 const chatHub = { saveMessage, chatList, messageList, allUsers, deleteDialog, updateGroupChat };
