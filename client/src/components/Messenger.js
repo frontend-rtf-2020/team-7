@@ -42,29 +42,40 @@ const Messenger = ({
                      updateGroupChat,
                    }) => {
   const [sendingToCustomer, setSendingToCustomer] = useState("");
-  const [tempForSendToCustomer, setTempForSendToCustomer] = useState(""); //переменная для обновления поля
   const [messageField, setMessageField] = useState("");
-  const [searchField, setSearchField] = useState("");
-  const [tempForSearchField, setTempForSearchField] = useState(""); //переменная для обновления поля
   const [listOfAllUsers, setListOfAllUsers] = useState([]); //никнеймы подходящие под поле поиска
+  const [listOfUsersForCreateGroupChat, setListOfUsersForCreateGroupChat] = useState([]); //никнеймы подходящие под поле поиска
+  const [listOfUsersForAddingInChat, setListOfUsersForAddingInChat] = useState([]); //никнеймы подходящие под поле поиска
   const [room, setRoom] = useState(""); //групповой чат
   const [openCreating, setOpenCreating] = useState(""); //переменная для создания группового чата
   const [groupChat, setGroupChat] = useState([]); //переменная для выбранных пользователей группового чата
   const [openAddingUsers, setOpenAddingUsers] = useState(""); //переменная для добавления пользователей в групповой чат
+  const [openDeletingUsers, setOpenDeletingUsers] = useState(""); //переменная для удаления пользователей из группового чата
 
   const handleSearch = (e) => {
-    setSearchField(e.target.value);
+    let list = [];
+    if (e.target.value !== "") {
+      for (let i = 0; i < getAllUsers.length; i++) {
+        if (getAllUsers[i].toLowerCase().includes(e.target.value.toLowerCase()))
+          list.push(getAllUsers[i]);
+      }
+      setListOfAllUsers(list);
+    } else setListOfAllUsers(list);
   };
 
   const handleClick = (e) => {
     if (e.target.value !== undefined) {
       let changeStr = e.target.value.split('\n\n')[0];
       setSendingToCustomer(changeStr);
+      updateMessages(changeStr);
+      if (changeStr.split(", ").length > 1) {
+        setRoom(changeStr);
+      } else setRoom("");
       setOpenCreating("");
       setOpenAddingUsers('');
       setGroupChat([]);
-    }
-    else e.preventDefault()
+      setOpenDeletingUsers('');
+    } else e.preventDefault()
   };
 
   const handleMessageField = (e) => {
@@ -98,6 +109,8 @@ const Messenger = ({
     };
     saveMessage(mes);
     setMessageField("");
+    updateMessages(sendingToCustomer);
+    updateDialogs()
   };
 
   //удаление диалога
@@ -113,22 +126,38 @@ const Messenger = ({
   //открытие окна для создания группового чата
   const handleCreateGroupChat = (e) => {
     e.preventDefault();
-    setOpenCreating("true");
     setOpenAddingUsers('');
+    setOpenDeletingUsers('');
+    setOpenCreating("true");
     setGroupChat([]);
+    setListOfUsersForCreateGroupChat(getAllUsers);
   };
 
-  //создание группового чата с выбранными пользователями
+  //подтверждение изменений внесенных в групповой чат
   const createGroupChat = (e) => {
     e.preventDefault();
-    if (openAddingUsers === '') {
+    if (openAddingUsers === '' && openDeletingUsers === '') {
       let str = groupChat;
       str.unshift(session.username);
       str = str.toString().replace(/,/g, ", ");
       setSendingToCustomer(str);
-    }
-    else {
-      let str = room + ', ' + groupChat.toString().replace(/,/g, ", ");
+    } else if (openAddingUsers === 'true') {
+      let str;
+      if (sendingToCustomer.split(', ')[sendingToCustomer.split(', ').length - 1] !== '')
+        str = sendingToCustomer + ', ' + groupChat.toString().replace(/,/g, ", ");
+      else str = sendingToCustomer + groupChat.toString().replace(/,/g, ", ");
+      const update = {
+        toUser: sendingToCustomer,
+        room: str,
+      };
+      updateGroupChat(update);
+      setSendingToCustomer(str);
+    } else if (openDeletingUsers === 'true') {
+      let str = sendingToCustomer;
+      for (let i = 0; i < groupChat.length; i++)
+        str = str.replace(', ' + groupChat[i], '');
+      if (str.split(', ').length === 1)
+        str = str + ', ';
       const update = {
         toUser: sendingToCustomer,
         room: str,
@@ -138,6 +167,8 @@ const Messenger = ({
     }
     setOpenCreating("");
     setOpenAddingUsers('');
+    setOpenDeletingUsers('');
+    setGroupChat([]);
   };
 
   //отмена создания чата или добавления нового пользователя
@@ -146,6 +177,7 @@ const Messenger = ({
     setGroupChat([]);
     setOpenCreating("");
     setOpenAddingUsers('');
+    setOpenDeletingUsers('');
   };
 
   //добавление новых пользователей в чат
@@ -153,6 +185,36 @@ const Messenger = ({
     e.preventDefault();
     setOpenCreating("true");
     setOpenAddingUsers('true');
+    let usersForAdding = getAllUsers.toString().split(',');
+    for (let i = 0; i < sendingToCustomer.split(', ').length; i++) {
+      let index = usersForAdding.indexOf(sendingToCustomer.split(', ')[i]);
+      usersForAdding.splice(index, 1)
+    }
+    setListOfUsersForAddingInChat(usersForAdding)
+  };
+
+  //удаление пользователей из группового чата
+  const deleteUsersFromChat = (e) => {
+    e.preventDefault();
+    setOpenCreating("true");
+    setOpenDeletingUsers('true');
+  };
+
+  const leaveFromChat = (e) => {
+    e.preventDefault();
+    let str = sendingToCustomer;
+    if (str.includes(session.username + ', '))
+      str = str.replace(session.username + ', ', '');
+    else str = str.replace(', ' + session.username, '');
+    if (str.split(', ').length === 1 && str.split(', ')[0].trim() !== '')
+      str = str + ', ';
+    const update = {
+      toUser: sendingToCustomer,
+      room: str,
+    };
+    updateGroupChat(update);
+    setSendingToCustomer('');
+    setRoom('');
   };
 
   //список активных диалогов
@@ -167,11 +229,11 @@ const Messenger = ({
     const listMessages = usersList.map((user) => {
       return (
           <ul key={user}>
-          <button className="user-btn" key={user} value={user} onClick={handleClick}>
-            <h1 key={Math.random()}>{user.split('\n\n')[0]}</h1>
-            <h3 key={Math.random()}>{user.split('\n\n')[1]}</h3>
-            <h2 key={Math.random()}>{user.split('\n\n')[2]}</h2>
-          </button>
+            <button className="user-btn" key={user} value={user} onClick={handleClick}>
+              <h1 key={Math.random()}>{user.split('\n\n')[0]}</h1>
+              <h3 key={Math.random()}>{user.split('\n\n')[1]}</h3>
+              <h2 key={Math.random()}>{user.split('\n\n')[2]}</h2>
+            </button>
           </ul>
       )
     });
@@ -187,71 +249,93 @@ const Messenger = ({
   }
 
   function ListOfUsers() {
-    return usersOutput(listOfAllUsers);
-  }
-
-  function usersOutput(element) {
-    const listAllUsers = element.map((user) => {
-      if (user === sendingToCustomer)
-        return (
-          <ul key={user}>
-            <button className="current-user-btn" key={user} value={user}>
-              {user}
-            </button>
-          </ul>
-        );
-      else
-        return (
-          <ul key={user}>
-            <button className="user-btn" key={user} value={user}>
-              {user}
-            </button>
-          </ul>
-        );
-    });
+    const listAllUsers = listOfAllUsers.map((user) => (
+        <ul key={user}>
+          {user === sendingToCustomer &&
+          <button className="current-user-btn" key={user} value={user}>
+            {user}
+          </button>
+          }
+          {user !== sendingToCustomer &&
+          <button className="user-btn" key={user} value={user}>
+            {user}
+          </button>
+          }
+        </ul>
+    ));
     return <div onClick={handleClick}>{listAllUsers}</div>;
   }
 
-  //список пользователей для создания группового чата или добавления в него
-  function ChooseUsersForGroupChat() {
-    if (openAddingUsers === '')
-      return <div onClick={handleChosen}>{outputForGroupChat(getAllUsers)}</div>;
-    else {
+  //поиск пользователей для создания группового чата или добавления в него
+  const handleSearchForGroupChat = (e) => {
+    let list = [];
+    if (openAddingUsers === '') {
+      for (let i = 0; i < getAllUsers.length; i++) {
+        if (getAllUsers[i].toLowerCase().includes(e.target.value.toLowerCase()))
+          list.push(getAllUsers[i]);
+        setListOfUsersForCreateGroupChat(list);
+      }
+    } else {
       let usersForAdding = getAllUsers.toString().split(',');
       for (let i = 0; i < sendingToCustomer.split(', ').length; i++) {
         let index = usersForAdding.indexOf(sendingToCustomer.split(', ')[i]);
         usersForAdding.splice(index, 1)
       }
-      return <div onClick={handleChosen}>{outputForGroupChat(usersForAdding)}</div>;
+      for (let i = 0; i < usersForAdding.length; i++) {
+        if (usersForAdding[i].toLowerCase().includes(e.target.value.toLowerCase()))
+          list.push(usersForAdding[i]);
+        setListOfUsersForAddingInChat(list)
+      }
+    }
+  };
+
+  //список пользователей для создания группового чата или изменения его
+  function ChooseUsersForGroupChat() {
+    if (openAddingUsers === '' && openDeletingUsers === '')
+      return <div onClick={handleChosen}>{outputForGroupChat(listOfUsersForCreateGroupChat)}</div>;
+    else if (openAddingUsers === 'true') {
+      return <div onClick={handleChosen}>{outputForGroupChat(listOfUsersForAddingInChat)}</div>;
+    } else if (openDeletingUsers === 'true') {
+      return <div onClick={handleChosen}>{outputForGroupChat(sendingToCustomer.split(', ').splice(1))}</div>;
     }
   }
 
+  //список выбранных пользователей
   function ChosenUsers() {
     return <div onClick={handleChosen}>{outputForGroupChat(groupChat)}</div>;
   }
 
+  //участники группового чата
   function GroupChat() {
-    let element = sendingToCustomer.split(", ");
-    for (let i = 0; i < element.length; i++)
-      if (element[i] === session.username) element.splice(i, 1);
-    return <div onClick={handleClick}>{outputForGroupChat(element)}</div>;
+    let users = sendingToCustomer.split(", ");
+    for (let i = 0; i < users.length; i++)
+      if (users[i] === session.username)
+        users.splice(i, 1);
+    if (users[users.length - 1] === '')
+      users.splice(users.length - 1, 1);
+    return <div onClick={handleClick}>{outputForGroupChat(users)}</div>;
   }
 
+  //вывод элементов
   function outputForGroupChat(element) {
-    return element.map((user) => (
-        <ul key={user}>
-          <button className="user-btn" key={user} value={user}>
-            {user}
-          </button>
-        </ul>
-    ));
+    return element.map((user) => {
+      if (user !== '')
+        return (
+            <ul key={user}>
+              <button className="user-btn" key={user} value={user}>
+                {user}
+              </button>
+            </ul>
+        )
+      else return (<h2>Пусто</h2>)
+    });
   }
 
   //список сообщений
-  function updateMessages() {
+  function updateMessages(element) {
     const dialog = {
       fromUser: session.username,
-      toUser: sendingToCustomer,
+      toUser: element,
     };
     messageList(dialog);
   }
@@ -271,138 +355,123 @@ const Messenger = ({
 
   //начальное обновление блоков
   if (getAllUsers.length === 0) {
+    setTimeout(() => {
       updateDialogs() || updateListOfUsers();
-  }
-
-  //обновление чата при выборе диалога
-  if (tempForSendToCustomer !== sendingToCustomer) {
-    updateMessages();
-    setTempForSendToCustomer(sendingToCustomer);
-    if (sendingToCustomer.split(", ").length > 1) {
-      setRoom(sendingToCustomer);
-    } else setRoom("");
-  }
-
-  //обновление поиска при вводе
-  if (tempForSearchField !== searchField) {
-    let list = [];
-    if (searchField !== "") {
-      for (let i = 0; i < getAllUsers.length; i++) {
-        if (getAllUsers[i].toLowerCase().includes(searchField.toLowerCase()))
-          list.push(getAllUsers[i]);
-      }
-      setListOfAllUsers(list);
-    } else setListOfAllUsers(list);
-    setTempForSearchField(searchField);
+    }, 100);
   }
 
   //автоматическое обновление блоков каждую секунду
   useEffect(() => {
     const interval = setInterval(() => {
-      updateListOfUsers() || updateDialogs() || updateMessages();
+      updateListOfUsers() || updateDialogs() || updateMessages(sendingToCustomer);
     }, 1000);
     return () => clearInterval(interval);
   });
 
   return (
-    <form>
-      <h1 className="inline">{session.username}</h1>
-      <button onClick={logout}>Logout</button>
-      <br />
-      <div className="inline-block">
-        <div className="usersForm">
-          <div className="list-of-users">
-            <h3>Поиск пользователей чата</h3>
-            <input type="text" onChange={handleSearch} />
-            <ListOfUsers />
+      <form>
+        <h1 className="inline">{session.username}</h1>
+        <button onClick={logout}>Logout</button>
+        <br/>
+        <div className="inline-block">
+          <div className="usersForm">
+            <div className="list-of-users">
+              <h3>Поиск пользователей чата</h3>
+              <input type="text" onChange={handleSearch}/>
+              <ListOfUsers/>
+            </div>
+            <button onClick={handleCreateGroupChat}>Создать груповой чат</button>
+            <h3>Активные диалоги</h3>
+            <Dialogs/>
           </div>
-          <button onClick={handleCreateGroupChat}>Создать груповой чат</button>
-          <h3>Активные диалоги</h3>
-          <Dialogs />
+          {sendingToCustomer === "" && openCreating === "" && (
+              <div className="blankChatForm">
+                <h3>Выберите, кому хотели бы написать</h3>
+              </div>
+          )}
+          {room !== "" && openCreating === "" && (
+              <div className="right-pos">
+                <div className="chatForm">
+                  <h2>
+                    {sendingToCustomer}
+                  </h2>
+                  <button onClick={addUsersInChat}>Добавить пользователя в чат</button>
+                  {sendingToCustomer.split(', ')[0] === session.username && (
+                      <button onClick={deleteUsersFromChat}>Удалить пользователя из чата</button>
+                  )}
+                  <button onClick={leaveFromChat}>Выйти из чата</button>
+                  <div className="messagesForm">
+                    <Messages/>
+                  </div>
+                  <br/>
+                  <div className="msg">
+                    <input
+                        className="msginput"
+                        type="text"
+                        name="message"
+                        placeholder="Сообщение"
+                        onChange={handleMessageField}
+                        onKeyPress={pressEnter}
+                    />
+                    <input
+                        className="msgbtn"
+                        type="submit"
+                        onClick={handleSubmit}
+                        value=""
+                    />
+                  </div>
+                </div>
+                <div className="usersForm">
+                  <h3>Участники чата</h3>
+                  <GroupChat/>
+                </div>
+              </div>
+          )}
+          {room === "" && sendingToCustomer !== "" && openCreating === "" && (
+              <div className="chatForm">
+                <h2>
+                  {sendingToCustomer}
+                  <button onClick={handleDeleteDialog}>Удалить диалог</button>
+                </h2>
+                <div className="messagesForm">
+                  <Messages/>
+                </div>
+                <br/>
+                <div className="msg">
+                  <input
+                      className="msginput"
+                      type="text"
+                      name="message"
+                      placeholder="Сообщение"
+                      onChange={handleMessageField}
+                      onKeyPress={pressEnter}
+                  />
+                  <input
+                      className="msgbtn"
+                      type="submit"
+                      onClick={handleSubmit}
+                      value=""
+                  />
+                </div>
+              </div>
+          )}
+          {openCreating === "true" && (
+              <div className="blankChatForm">
+                <div className="usersForm">
+                  {openDeletingUsers === '' && (
+                      <input type="text" onChange={handleSearchForGroupChat}/>
+                  )}
+                  <ChooseUsersForGroupChat/>
+                </div>
+                <div className="usersForm">
+                  <ChosenUsers/>
+                </div>
+                <button onClick={createGroupChat}>Подтвердить выбор</button>
+                <button onClick={cancellation}>Отмена</button>
+              </div>
+          )}
         </div>
-        {sendingToCustomer === "" && openCreating === "" && (
-          <div className="blankChatForm">
-            <h3>Выберите, кому хотели бы написать</h3>
-          </div>
-        )}
-        {room !== "" && openCreating === "" && (
-          <div className="right-pos">
-            <div className="chatForm">
-              <h2>
-                {sendingToCustomer}
-                <button onClick={addUsersInChat}>Добавить пользователя в чат</button>
-              </h2>
-              <div className="messagesForm">
-                <Messages />
-              </div>
-              <br />
-              <div className="msg">
-                <input
-                  className="msginput"
-                  type="text"
-                  name="message"
-                  placeholder="Сообщение"
-                  value={messageField}
-                  onChange={handleMessageField}
-                  onKeyPress={pressEnter}
-                />
-                <input
-                  className="msgbtn"
-                  type="submit"
-                  onClick={handleSubmit}
-                  value=""
-                />
-              </div>
-            </div>
-            <div className="usersForm">
-              <h3>Участники чата</h3>
-              <GroupChat />
-            </div>
-          </div>
-        )}
-        {room === "" && sendingToCustomer !== "" && openCreating === "" && (
-          <div className="chatForm">
-            <h2>
-              {sendingToCustomer}
-              <button onClick={handleDeleteDialog}>Удалить диалог</button>
-            </h2>
-            <div className="messagesForm">
-              <Messages />
-            </div>
-            <br />
-            <div className="msg">
-              <input
-                className="msginput"
-                type="text"
-                name="message"
-                placeholder="Сообщение"
-                value={messageField}
-                onChange={handleMessageField}
-                onKeyPress={pressEnter}
-              />
-              <input
-                className="msgbtn"
-                type="submit"
-                onClick={handleSubmit}
-                value=""
-              />
-            </div>
-          </div>
-        )}
-        {openCreating === "true" && (
-          <div className="blankChatForm">
-            <div className="usersForm">
-              <ChooseUsersForGroupChat />
-            </div>
-            <div className="usersForm">
-              <ChosenUsers />
-            </div>
-            <button onClick={createGroupChat}>Подтвердить выбор</button>
-            <button onClick={cancellation}>Отмена</button>
-          </div>
-        )}
-      </div>
-    </form>
+      </form>
   );
 };
 
