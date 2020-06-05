@@ -112,7 +112,7 @@ async function deleteDialog(user){
 
 async function updateGroupChat(data){
   const {toUser, room} = data;
-  await Chat.update({room: toUser}, {room: room})
+  await Chat.updateMany({room: toUser}, {room: room})
 }
 
 const chatHub = { saveMessage, chatList, messageList, allUsers, deleteDialog, updateGroupChat };
