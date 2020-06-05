@@ -72,31 +72,42 @@ export const logout = () => async (dispatch) => {
 };
 
 export const saveMessage = (mes) => async () => {
-  await apiUtil.saveMessage(mes);
+  apiUtil.saveMessage(mes);
 };
 
-export const chatList = (user) => async (dispatch) => {
-  const response = await apiUtil.chatList(user);
-  const data = await response.json();
-  return dispatch(receiveUsersList(data));
-};
+export function chatList(user) {
+  apiUtil.chatList(user);
+  //так как мы определили event и handle, то кастомный миддл варе поймет это и выполнит необходимые действия
+  //не уверен что это все сделано по канону, но это работает
+  return (dispatch) =>
+    dispatch({
+      event: "returnChatList",
+      handle: (data) => dispatch(receiveUsersList(data)),
+    });
+}
 
-export const messageList = (user) => async (dispatch) => {
-  const response = await apiUtil.messageList(user);
-  const data = await response.json();
-  return dispatch(receiveMessages(data));
-};
+export function messageList(user) {
+  apiUtil.messageList(user);
+  return (dispatch) =>
+    dispatch({
+      event: "returnMessageList",
+      handle: (data) => dispatch(receiveMessages(data)),
+    });
+}
 
-export const allUsers = (user) => async (dispatch) => {
-  const response = await apiUtil.allUsers(user);
-  const data = await response.json();
-  return dispatch(receiveAllUsers(data));
-};
+export function allUsers(user) {
+  apiUtil.allUsers(user);
+  return (dispatch) =>
+    dispatch({
+      event: "returnAllUsers",
+      handle: (user) => dispatch(receiveAllUsers(user)),
+    });
+}
 
 export const deleteDialog = (user) => async () => {
   await apiUtil.deleteDialog(user);
 };
 
 export const updateGroupChat = (user) => async () => {
-  await apiUtil.updateGroupChat(user);
+  apiUtil.updateGroupChat(user);
 };

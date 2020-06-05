@@ -1,19 +1,18 @@
-const express = require('express');
 const Chat = require('../models/chat');
 const User = require('../models/user-model');
-const chatRouter = express.Router();
 
-chatRouter.post('/saveMessage', async (req, res) => {
-  const { fromUser, toUser, message } = req.body;
+async function saveMessage(mes) {
+  const { fromUser, toUser, message } = mes;
   let newMessage;
   if (toUser.split(', ').length === 1)
     newMessage = new Chat({ fromUser: fromUser, toUser: toUser, message: message });
   else newMessage = new Chat({ room: toUser, fromUser: fromUser, message: message });
   if (message.trim() !== '') await newMessage.save();
-});
+}
 
-chatRouter.post('/chatList', async (req, res) => {
-  const {fromUser} = req.body;
+async function chatList(user, socket) {
+  //обрабатываем информацию
+  const {fromUser} = user;
   let users = await Chat.find({fromUser: fromUser}, 'toUser -_id');
   let toCurrentUsers = await Chat.find({toUser: fromUser}, 'fromUser -_id');
   let groupChat = await Chat.find({room: /[\w\s]*,/}, 'room -_id');
@@ -53,11 +52,12 @@ chatRouter.post('/chatList', async (req, res) => {
       lastMessage = lastMessage.replace(fromUser + ':', 'Вы:');
     list[i] += lastMessage
   }
-  res.send(JSON.stringify(list));
-});
+  //отправляем вызываем на клиенте действие по событию 'returnChatList'
+  return socket.emit('returnChatList', list);
+}
 
-chatRouter.post('/messageList', async (req, res) => {
-  const { fromUser, toUser } = req.body;
+async function messageList(user, socket) {
+  const { fromUser, toUser } = user;
   if (toUser.split(', ').length === 1) {
     let messages = await Chat.find(
       {
@@ -68,12 +68,12 @@ chatRouter.post('/messageList', async (req, res) => {
       },
       'time fromUser message -_id',
     ).sort('time');
-    res.send(JSON.stringify(parseStr(messages)));
+    return socket.emit('returnMessageList', parseStr(messages));
   } else {
     let messages = await Chat.find({ room: toUser }, 'time fromUser message -_id').sort('time');
-    res.send(JSON.stringify(parseStr(messages)));
+    return socket.emit('returnMessageList', parseStr(messages));
   }
-});
+}
 
 function parseStr(messages) {
   let list = [];
@@ -87,9 +87,8 @@ function parseStr(messages) {
   if (list.length === 0) list.push('Список сообщений пуст');
   return list;
 }
-
-chatRouter.post('/allUsers', async (req, res) => {
-  const { username } = req.body;
+async function allUsers(user, socket) {
+  const { username } = user;
   let users = await User.find({}, 'username -_id').sort('username');
   let list = [];
   for (let element of users) {
@@ -98,22 +97,24 @@ chatRouter.post('/allUsers', async (req, res) => {
     str = str.replace("' }", '');
     if (str !== username) list.push(str);
   }
-  res.send(JSON.stringify(list));
-});
+  return socket.emit('returnAllUsers', list);
+}
 
-chatRouter.post('/deleteDialog', async (req, res) => {
-  const { fromUser, toUser } = req.body;
+async function deleteDialog(user){
+  const { fromUser, toUser } = user;
   await Chat.deleteMany({
     $or: [
       { fromUser: fromUser, toUser: toUser },
       { fromUser: toUser, toUser: fromUser },
     ],
   });
-});
+}
 
-chatRouter.post('/updateGroupChat', async (req, res) => {
-  const {toUser, room} = req.body;
+async function updateGroupChat(data){
+  const {toUser, room} = data;
   await Chat.updateMany({room: toUser}, {room: room})
-});
+}
 
-module.exports = chatRouter;
+const chatHub = { saveMessage, chatList, messageList, allUsers, deleteDialog, updateGroupChat };
+
+module.exports = chatHub;
