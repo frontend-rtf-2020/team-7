@@ -271,9 +271,7 @@ const Messenger = ({
 
   //начальное обновление блоков
   if (getAllUsers.length === 0) {
-    setTimeout(() => {
       updateDialogs() || updateListOfUsers();
-    }, 100);
   }
 
   //обновление чата при выборе диалога
