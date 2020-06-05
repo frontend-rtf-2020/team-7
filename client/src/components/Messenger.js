@@ -410,6 +410,7 @@ const Messenger = ({
                         type="text"
                         name="message"
                         placeholder="Сообщение"
+                        value={messageField}
                         onChange={handleMessageField}
                         onKeyPress={pressEnter}
                     />
@@ -443,6 +444,7 @@ const Messenger = ({
                       type="text"
                       name="message"
                       placeholder="Сообщение"
+                      value={messageField}
                       onChange={handleMessageField}
                       onKeyPress={pressEnter}
                   />
