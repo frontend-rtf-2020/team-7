@@ -57,11 +57,14 @@ const Messenger = ({
   };
 
   const handleClick = (e) => {
-    let changeStr = e.target.value.split('\n\n')[0];
-    setSendingToCustomer(changeStr);
-    setOpenCreating("");
-    setOpenAddingUsers('');
-    setGroupChat([]);
+    if (e.target.value !== undefined) {
+      let changeStr = e.target.value.split('\n\n')[0];
+      setSendingToCustomer(changeStr);
+      setOpenCreating("");
+      setOpenAddingUsers('');
+      setGroupChat([]);
+    }
+    else e.preventDefault()
   };
 
   const handleMessageField = (e) => {
@@ -73,7 +76,8 @@ const Messenger = ({
     if (groupChat.length !== 0) {
       for (let i = 0; i < groupChat.length; i++) list.push(groupChat[i]);
     }
-    list.push(e.target.value);
+    if (!list.includes(e.target.value))
+      list.push(e.target.value);
     setGroupChat(list);
   };
 
@@ -160,7 +164,18 @@ const Messenger = ({
   }
 
   function Dialogs() {
-    return usersOutput(usersList);
+    const listMessages = usersList.map((user) => {
+      return (
+          <ul key={user}>
+          <button className="user-btn" key={user} value={user} onClick={handleClick}>
+            <h1 key={Math.random()}>{user.split('\n\n')[0]}</h1>
+            <h3 key={Math.random()}>{user.split('\n\n')[1]}</h3>
+            <h2 key={Math.random()}>{user.split('\n\n')[2]}</h2>
+          </button>
+          </ul>
+      )
+    });
+    return <div>{listMessages}</div>;
   }
 
   //все пользователи чата
@@ -199,7 +214,16 @@ const Messenger = ({
 
   //список пользователей для создания группового чата или добавления в него
   function ChooseUsersForGroupChat() {
-    return <div onClick={handleChosen}>{outputForGroupChat(getAllUsers)}</div>;
+    if (openAddingUsers === '')
+      return <div onClick={handleChosen}>{outputForGroupChat(getAllUsers)}</div>;
+    else {
+      let usersForAdding = getAllUsers.toString().split(',');
+      for (let i = 0; i < sendingToCustomer.split(', ').length; i++) {
+        let index = usersForAdding.indexOf(sendingToCustomer.split(', ')[i]);
+        usersForAdding.splice(index, 1)
+      }
+      return <div onClick={handleChosen}>{outputForGroupChat(usersForAdding)}</div>;
+    }
   }
 
   function ChosenUsers() {
@@ -233,9 +257,15 @@ const Messenger = ({
   }
 
   function Messages() {
-    const listMessages = chatShow.map((message) => (
-      <ul key={Math.random()}>{message}</ul>
-    ));
+    const listMessages = chatShow.map((message) => {
+      return (
+          <div key={Math.random()}>
+            <h1 key={Math.random()}>{message.split('\n')[0]}</h1>
+            <h3 key={Math.random()}>{message.split('\n')[1]}</h3>
+            <h2 key={Math.random()}>{message.split('\n')[2]}</h2>
+          </div>
+      )
+    });
     return <div>{listMessages}</div>;
   }
 

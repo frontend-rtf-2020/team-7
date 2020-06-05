@@ -44,12 +44,11 @@ chatRouter.post('/chatList', async (req, res) => {
           {fromUser: fromUser, toUser: list[i]},
           {fromUser: list[i], toUser: fromUser},
         ],
-      }, 'fromUser message time -_id').sort({time: -1}).limit(1);
+      }, 'message time -_id').sort({time: -1}).limit(1);
     else
-      lastMessage = await Chat.find({room: list[i]}, 'fromUser message time -_id').sort({time: -1}).limit(1);
-    lastMessage = lastMessage.toString().replace(/{[\w\s,:']*fromUser:\s*'/i, '\n\n');
-    lastMessage = lastMessage.replace(/'[\w\s,:']*message:\s*'/i, ': ');
-    lastMessage = lastMessage.replace(/'[\s,]*[\s]*time:\s(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):\d{2}.\d{3}Z\s*}/i, '\n$4:$5');
+      lastMessage = await Chat.find({room: list[i]}, 'message time -_id').sort({time: -1}).limit(1);
+    lastMessage = lastMessage.toString().replace(/{[\w\s,:']*message:\s*'/i, '\n\n');
+    lastMessage = lastMessage.replace(/'[\s,]*[\s]*time:\s(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):\d{2}.\d{3}Z\s*}/i, '\n\n$4:$5');
     if (lastMessage.includes(fromUser + ':'))
       lastMessage = lastMessage.replace(fromUser + ':', 'Вы:');
     list[i] += lastMessage
@@ -81,7 +80,7 @@ function parseStr(messages) {
   for (let element of messages) {
     let str = element.toString();
     str = str.replace(/{[\w\s,:']*fromUser:\s*'/i, '');
-    str = str.replace(/'[\w\s,:']*message:\s*'/i, ': ');
+    str = str.replace(/'[\w\s,:']*message:\s*'/i, '\n');
     str = str.replace(/'[\s,]*[\s]*time:\s(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):\d{2}.\d{3}Z\s*}/i, '\n$4:$5\t$3-$2-$1');
     list.push(str);
   }
