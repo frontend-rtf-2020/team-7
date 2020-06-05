@@ -75,6 +75,7 @@ const Messenger = ({
       setOpenAddingUsers('');
       setGroupChat([]);
       setOpenDeletingUsers('');
+      setMessageField("");
     } else e.preventDefault()
   };
 
@@ -121,6 +122,7 @@ const Messenger = ({
       toUser: sendingToCustomer,
     };
     deleteDialog(dialog);
+    setMessageField("");
   };
 
   //открытие окна для создания группового чата
@@ -130,6 +132,7 @@ const Messenger = ({
     setOpenDeletingUsers('');
     setOpenCreating("true");
     setGroupChat([]);
+    setMessageField("");
     setListOfUsersForCreateGroupChat(getAllUsers);
   };
 
@@ -183,6 +186,7 @@ const Messenger = ({
   //добавление новых пользователей в чат
   const addUsersInChat = (e) => {
     e.preventDefault();
+    setMessageField("");
     setOpenCreating("true");
     setOpenAddingUsers('true');
     let usersForAdding = getAllUsers.toString().split(',');
@@ -196,12 +200,14 @@ const Messenger = ({
   //удаление пользователей из группового чата
   const deleteUsersFromChat = (e) => {
     e.preventDefault();
+    setMessageField("");
     setOpenCreating("true");
     setOpenDeletingUsers('true');
   };
 
   const leaveFromChat = (e) => {
     e.preventDefault();
+    setMessageField("");
     let str = sendingToCustomer;
     if (str.includes(session.username + ', '))
       str = str.replace(session.username + ', ', '');
