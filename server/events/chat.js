@@ -43,11 +43,14 @@ async function chatList(user, socket) {
           {fromUser: fromUser, toUser: list[i]},
           {fromUser: list[i], toUser: fromUser},
         ],
-      }, 'message time -_id').sort({time: -1}).limit(1);
+      }, 'fromUser message time -_id').sort({time: -1}).limit(1);
     else
-      lastMessage = await Chat.find({room: list[i]}, 'message time -_id').sort({time: -1}).limit(1);
-    lastMessage = lastMessage.toString().replace(/{[\w\s,:']*message:\s*'/i, '\n\n');
-    lastMessage = lastMessage.replace(/'[\s,]*[\s]*time:\s(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):\d{2}.\d{3}Z\s*}/i, '\n\n$4:$5');
+      lastMessage = await Chat.find({room: list[i]}, 'fromUser message time -_id').sort({time: -1}).limit(1);
+    lastMessage = lastMessage.toString().replace(/{[\w\s,:']*fromUser:\s*'/i, '\n\n');
+    lastMessage = lastMessage.replace(/'[\w\s,:']*message:\s*'/i, ': ');
+    let date = new Date(lastMessage.split(/'[\s,]*[\s]*time:\s/i)[1].replace(/\s*}/i, '')).toString();
+    date = date.replace(/\w{3}\s\w{3}\s\d{2}\s\d{4}\s(\d{2}):(\d{2})[\w\s\d,:'+()]*/i, '$1:$2')
+    lastMessage = lastMessage.replace(/'[\s,]*[\s]*time:\s(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):\d{2}.\d{3}Z\s*}/i, '\n\n' + date);
     if (lastMessage.includes(fromUser + ':'))
       lastMessage = lastMessage.replace(fromUser + ':', 'Вы:');
     list[i] += lastMessage
@@ -81,7 +84,9 @@ function parseStr(messages) {
     let str = element.toString();
     str = str.replace(/{[\w\s,:']*fromUser:\s*'/i, '');
     str = str.replace(/'[\w\s,:']*message:\s*'/i, '\n');
-    str = str.replace(/'[\s,]*[\s]*time:\s(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):\d{2}.\d{3}Z\s*}/i, '\n$4:$5\t$3-$2-$1');
+    let date = new Date(str.split(/'[\s,]*[\s]*time:\s/i)[1].replace(/\s*}/i, '')).toString();
+    date = date.replace(/\w{3}\s(\w{3})\s(\d{2})\s(\d{4})\s(\d{2}):(\d{2})[\w\s\d,:'+()]*/i, '$4:$5\t$2-$1-$3');
+    str = str.replace(/'[\s,]*[\s]*time:\s(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):\d{2}.\d{3}Z\s*}/i, '\n' + date);
     list.push(str);
   }
   if (list.length === 0) list.push('Список сообщений пуст');

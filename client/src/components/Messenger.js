@@ -71,10 +71,7 @@ const Messenger = ({
       if (changeStr.split(", ").length > 1) {
         setRoom(changeStr);
       } else setRoom("");
-      setOpenCreating("");
-      setOpenAddingUsers('');
-      setGroupChat([]);
-      setOpenDeletingUsers('');
+      zeroing();
       setMessageField("");
     } else e.preventDefault()
   };
@@ -168,20 +165,21 @@ const Messenger = ({
       updateGroupChat(update);
       setSendingToCustomer(str);
     }
-    setOpenCreating("");
-    setOpenAddingUsers('');
-    setOpenDeletingUsers('');
-    setGroupChat([]);
+    zeroing();
   };
 
   //отмена создания чата или добавления нового пользователя
   const cancellation = (e) => {
     e.preventDefault();
+    zeroing();
+  };
+  
+  function zeroing() {
     setGroupChat([]);
-    setOpenCreating("");
+    setOpenCreating('');
     setOpenAddingUsers('');
     setOpenDeletingUsers('');
-  };
+  }
 
   //добавление новых пользователей в чат
   const addUsersInChat = (e) => {
@@ -346,6 +344,15 @@ const Messenger = ({
     messageList(dialog);
   }
 
+  const ref = React.createRef();
+
+  const handleScroll = () => {
+    ref.current.scrollIntoView({
+      behavior: 'smooth',
+      block: 'end',
+    });
+  }
+
   function Messages() {
     const listMessages = chatShow.map((message) => {
       return (
@@ -356,7 +363,7 @@ const Messenger = ({
           </div>
       )
     });
-    return <div>{listMessages}</div>;
+    return <div ref={ref} onClick={handleScroll}>{listMessages}</div>;
   }
 
   //начальное обновление блоков
