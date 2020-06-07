@@ -45,8 +45,8 @@
 }
 .blankGroupChatForm h1{
     margin: 0;
-    padding-top: 2vh;
-    padding-bottom: 2vh;
+    padding-top: 23px;
+    padding-bottom: 23px;
     text-align: center;
     background: #6926be;
     font-size: 24px;
@@ -152,6 +152,8 @@ ul{
     font-weight: normal;
     font-size: 16px;
     text-align: left;
+    width: 95%;
+    word-wrap: break-word;
 }
 .messagesForm > div .name-time > h1{
     padding: 0 0 0 8px;
@@ -322,6 +324,10 @@ input.msgbtn:hover{
     color: #61b6ff;
     font-weight: normal;
     font-size: 13px;
+    width: 94%;
+    overflow: hidden;
+    text-align: left;
+    border-radius: 0 0 0 0;
 }
 .usersForm ul .current-user-btn{
     background: #b8d5fd;
@@ -344,10 +350,10 @@ h1{
     font-family: 'Lucida Grande' ,'Montserrat', sans-serif;
 }
 h2{
-    margin:2vh 25px;
+    margin: 20px 25px;
     display: flex;
-    line-height: 3vh;
-    height: 3vh;
+    line-height: 34px;
+    height: 34px;
     border-radius: 0 10px 0 0;
     color: white;
     justify-content: space-between;

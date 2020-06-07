@@ -73,7 +73,7 @@ const Messenger = ({
       } else setRoom("");
       zeroing();
       setMessageField("");
-    } else e.preventDefault()
+    } else e.preventDefault();
   };
 
   const handleMessageField = (e) => {
