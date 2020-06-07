@@ -310,6 +310,7 @@ input.msgbtn:hover{
     font-weight: normal;
     font-size: 14px;
     color: #61b6ff;
+    border-radius: 0 0 0 0;
 }
 .usersForm ul button h3{
     background: none;
