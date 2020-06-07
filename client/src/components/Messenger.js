@@ -165,15 +165,32 @@ const Messenger = ({
 
   function Dialogs() {
     const listMessages = usersList.map((user) => {
-      return (
-          <ul key={user}>
-          <button className="user-btn" key={user} value={user} onClick={handleClick}>
-            <h1 key={Math.random()}>{user.split('\n\n')[0]}</h1>
-            <h3 key={Math.random()}>{user.split('\n\n')[1]}</h3>
-            <h2 key={Math.random()}>{user.split('\n\n')[2]}</h2>
-          </button>
-          </ul>
-      )
+      if (user.split('\n\n')[0] === sendingToCustomer){
+        return (
+            <ul key={user}>
+              <button className="current-user-btn" key={user} value={user} onClick={handleClick}>
+                <div className="name-time">
+                  <h1 key={Math.random()}>{user.split('\n\n')[0]}</h1>
+                  <h2 key={Math.random()}>{user.split('\n\n')[2]}</h2>
+                </div>
+                <h3 key={Math.random()}>{user.split('\n\n')[1]}</h3>
+              </button>
+            </ul>
+        )
+      }
+      else{
+        return (
+            <ul key={user}>
+              <button className="user-btn" key={user} value={user} onClick={handleClick}>
+                <div className="name-time">
+                  <h1 key={Math.random()}>{user.split('\n\n')[0]}</h1>
+                  <h2 key={Math.random()}>{user.split('\n\n')[2]}</h2>
+                </div>
+                <h3 key={Math.random()}>{user.split('\n\n')[1]}</h3>
+              </button>
+            </ul>
+        )
+      }
     });
     return <div>{listMessages}</div>;
   }
@@ -234,7 +251,7 @@ const Messenger = ({
     let element = sendingToCustomer.split(", ");
     for (let i = 0; i < element.length; i++)
       if (element[i] === session.username) element.splice(i, 1);
-    return <div onClick={handleClick}>{outputForGroupChat(element)}</div>;
+    return <div className="chosen-users" onClick={handleClick}>{outputForGroupChat(element)}</div>;
   }
 
   function outputForGroupChat(element) {
@@ -258,13 +275,28 @@ const Messenger = ({
 
   function Messages() {
     const listMessages = chatShow.map((message) => {
-      return (
-          <div key={Math.random()}>
-            <h1 key={Math.random()}>{message.split('\n')[0]}</h1>
-            <h3 key={Math.random()}>{message.split('\n')[1]}</h3>
-            <h2 key={Math.random()}>{message.split('\n')[2]}</h2>
-          </div>
-      )
+      if (message.split('\n')[0] === session.username){
+        return (
+            <div key={Math.random()} className="current-msg-frame">
+              <div className="name-time">
+                <h1 key={Math.random()}>{message.split('\n')[0]}</h1>
+                <h2 key={Math.random()}>{message.split('\n')[2]}</h2>
+              </div>
+              <h3 key={Math.random()}>{message.split('\n')[1]}</h3>
+            </div>
+        )
+      }
+      else{
+        return (
+            <div key={Math.random()} className="msg-frame">
+              <div className="name-time">
+                <h1 key={Math.random()}>{message.split('\n')[0]}</h1>
+                <h2 key={Math.random()}>{message.split('\n')[2]}</h2>
+              </div>
+              <h3 key={Math.random()}>{message.split('\n')[1]}</h3>
+            </div>
+        )
+      }
     });
     return <div>{listMessages}</div>;
   }
@@ -300,7 +332,7 @@ const Messenger = ({
   useEffect(() => {
     const interval = setInterval(() => {
       updateListOfUsers() || updateDialogs() || updateMessages();
-    }, 1000);
+    }, 100);
     return () => clearInterval(interval);
   });
 
@@ -317,7 +349,7 @@ const Messenger = ({
             <input type="text" placeholder="Поиск пользователей" onChange={handleSearch} />
             <ListOfUsers />
           </div>
-          <button onClick={handleCreateGroupChat}>Создать беседу</button>
+          <button className="create-btn" onClick={handleCreateGroupChat}>Создать беседу</button>
           <Dialogs />
         </div>
         {sendingToCustomer === "" && openCreating === "" && (
@@ -354,8 +386,8 @@ const Messenger = ({
                 />
               </div>
             </div>
-            <div className="usersForm">
-              <h3>Участники чата</h3>
+            <div className="blankGroupChatForm">
+              <h1>Участники чата</h1>
               <GroupChat />
             </div>
           </div>
@@ -390,15 +422,21 @@ const Messenger = ({
           </div>
         )}
         {openCreating === "true" && (
-          <div className="blankChatForm">
-            <div className="usersForm">
-              <ChooseUsersForGroupChat />
+          <div className="blankGroupChatForm">
+            <h1>Добавить пользователей</h1>
+            <div className="form-for-choose">
+              <div className="all-users">
+                <ChooseUsersForGroupChat />
+              </div>
+              <img src={"/arrow.png"} height="50px" width="65px"/>
+              <div className="chosen-users">
+                <ChosenUsers />
+              </div>
             </div>
-            <div className="usersForm">
-              <ChosenUsers />
+            <div className="btn-success">
+              <button className="cancel" onClick={cancellation}>Отмена</button>
+              <button className="success" onClick={createGroupChat}>Подтвердить выбор</button>
             </div>
-            <button onClick={createGroupChat}>Подтвердить выбор</button>
-            <button onClick={cancellation}>Отмена</button>
           </div>
         )}
       </div>
