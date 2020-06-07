@@ -22,7 +22,8 @@
 }
 
 .label-text {
-    display: inline-block;
+    display: flex;
+    flex-direction: column;
     color: #0e28bd;
     font-size: 20px;
     text-align: center;

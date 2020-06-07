@@ -234,15 +234,32 @@ const Messenger = ({
 
   function Dialogs() {
     const listMessages = usersList.map((user) => {
-      return (
-          <ul key={user}>
-            <button className="user-btn" key={user} value={user} onClick={handleClick}>
-              <h1 key={Math.random()}>{user.split('\n\n')[0]}</h1>
-              <h3 key={Math.random()}>{user.split('\n\n')[1]}</h3>
-              <h2 key={Math.random()}>{user.split('\n\n')[2]}</h2>
-            </button>
-          </ul>
-      )
+      if (user.split('\n\n')[0] === sendingToCustomer){
+        return (
+            <ul key={user}>
+              <button className="current-user-btn" key={user} value={user} onClick={handleClick}>
+                <div className="name-time">
+                  <h1 key={Math.random()}>{user.split('\n\n')[0]}</h1>
+                  <h2 key={Math.random()}>{user.split('\n\n')[2]}</h2>
+                </div>
+                <h3 key={Math.random()}>{user.split('\n\n')[1]}</h3>
+              </button>
+            </ul>
+        )
+      }
+      else{
+        return (
+            <ul key={user}>
+              <button className="user-btn" key={user} value={user} onClick={handleClick}>
+                <div className="name-time">
+                  <h1 key={Math.random()}>{user.split('\n\n')[0]}</h1>
+                  <h2 key={Math.random()}>{user.split('\n\n')[2]}</h2>
+                </div>
+                <h3 key={Math.random()}>{user.split('\n\n')[1]}</h3>
+              </button>
+            </ul>
+        )
+      }
     });
     return <div>{listMessages}</div>;
   }
@@ -358,18 +375,26 @@ const Messenger = ({
 
   function Messages() {
     const listMessages = chatShow.map((message) => {
-      if (message.split('\n').length > 1) {
+      if (message.split('\n')[0] === session.username){
         return (
-            <div key={Math.random()}>
-              <h1 key={Math.random()}>{message.split('\n')[0]}</h1>
+            <div key={Math.random()} className="current-msg-frame">
+              <div className="name-time">
+                <h1 key={Math.random()}>{message.split('\n')[0]}</h1>
+                <h2 key={Math.random()}>{message.split('\n')[2]}</h2>
+              </div>
               <h3 key={Math.random()}>{message.split('\n')[1]}</h3>
-              <h2 key={Math.random()}>{message.split('\n')[2]}</h2>
             </div>
         )
       }
-      else {
+      else{
         return (
-            <h1 key={Math.random()}>{message}</h1>
+            <div key={Math.random()} className="msg-frame">
+              <div className="name-time">
+                <h1 key={Math.random()}>{message.split('\n')[0]}</h1>
+                <h2 key={Math.random()}>{message.split('\n')[2]}</h2>
+              </div>
+              <h3 key={Math.random()}>{message.split('\n')[1]}</h3>
+            </div>
         )
       }
     });
@@ -392,20 +417,24 @@ const Messenger = ({
   });
 
   return (
-      <form>
+    <form className="inline-block">
+      <div className="logout">
         <h1 className="inline">{session.username}</h1>
         <button onClick={logout}>Logout</button>
-        <br/>
-        <div className="inline-block">
-          <div className="usersForm">
-            <div className="list-of-users">
-              <h3>Поиск пользователей чата</h3>
-              <input type="text" onChange={handleSearch}/>
-              <ListOfUsers/>
-            </div>
-            <button onClick={handleCreateGroupChat}>Создать груповой чат</button>
-            <h3>Активные диалоги</h3>
-            <Dialogs/>
+        <br />
+      </div>
+      <div className="messenger">
+        <div className="usersForm">
+          <div className="list-of-users">
+            <input type="text" placeholder="Поиск пользователей" onChange={handleSearch} />
+            <ListOfUsers />
+          </div>
+          <button className="create-btn" onClick={handleCreateGroupChat}>Создать беседу</button>
+          <Dialogs />
+        </div>
+        {sendingToCustomer === "" && openCreating === "" && (
+          <div className="blankChatForm">
+            <h3>Выберите, кому хотели бы написать</h3>
           </div>
           {sendingToCustomer === "" && openCreating === "" && (
               <div className="blankChatForm">
@@ -450,53 +479,62 @@ const Messenger = ({
                   <GroupChat/>
                 </div>
               </div>
-          )}
-          {room === "" && sendingToCustomer !== "" && openCreating === "" && (
-              <div className="chatForm">
-                <h2>
-                  {sendingToCustomer}
-                  <button onClick={handleDeleteDialog}>Удалить диалог</button>
-                </h2>
-                <div className="messagesForm">
-                  <Messages/>
-                </div>
-                <br/>
-                <div className="msg">
-                  <input
-                      className="msginput"
-                      type="text"
-                      name="message"
-                      placeholder="Сообщение"
-                      value={messageField}
-                      onChange={handleMessageField}
-                      onKeyPress={pressEnter}
-                  />
-                  <input
-                      className="msgbtn"
-                      type="submit"
-                      onClick={handleSubmit}
-                      value=""
-                  />
-                </div>
+            </div>
+            <div className="blankGroupChatForm">
+              <h1>Участники чата</h1>
+              <GroupChat />
+            </div>
+          </div>
+        )}
+        {room === "" && sendingToCustomer !== "" && openCreating === "" && (
+          <div className="chatForm">
+            <h2>
+              {sendingToCustomer}
+              <button onClick={handleDeleteDialog}>Удалить диалог</button>
+            </h2>
+            <div className="messagesForm">
+              <Messages />
+            </div>
+            <br />
+            <div className="msg">
+              <input
+                className="msginput"
+                type="text"
+                name="message"
+                placeholder="Сообщение"
+                value={messageField}
+                onChange={handleMessageField}
+                onKeyPress={pressEnter}
+              />
+              <input
+                className="msgbtn"
+                type="submit"
+                onClick={handleSubmit}
+                value=""
+              />
+            </div>
+          </div>
+        )}
+        {openCreating === "true" && (
+          <div className="blankGroupChatForm">
+            <h1>Добавить пользователей</h1>
+            <div className="form-for-choose">
+              <div className="all-users">
+                <ChooseUsersForGroupChat />
               </div>
-          )}
-          {openCreating === "true" && (
-              <div className="blankChatForm">
-                <div className="usersForm">
-                  {openDeletingUsers === '' && (
-                      <input type="text" onChange={handleSearchForGroupChat}/>
-                  )}
-                  <ChooseUsersForGroupChat/>
-                </div>
-                <div className="usersForm">
-                  <ChosenUsers/>
-                </div>
-                <button onClick={createGroupChat}>Подтвердить выбор</button>
-                <button onClick={cancellation}>Отмена</button>
+              <img src={"/arrow.png"} height="50px" width="65px"/>
+              <div className="chosen-users">
+                <ChosenUsers />
               </div>
-          )}
-        </div>
-      </form>
+            </div>
+            <div className="btn-success">
+              <button className="cancel" onClick={cancellation}>Отмена</button>
+              <button className="success" onClick={createGroupChat}>Подтвердить выбор</button>
+            </div>
+          </div>
+        )}
+      </div>
+    </form>
   );
 };
 
