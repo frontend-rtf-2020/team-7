@@ -35,7 +35,7 @@
     font-size: 16px;
 }
 .blankGroupChatForm .chosen-users{
-    width: 250px;
+    width: 97%;
 }
 .form-for-choose{
     display: flex;
@@ -139,6 +139,7 @@ ul{
     align-items: flex-start;
     padding-left: 10px;
     padding-right: 10px;
+    overflow: auto;
 }
 .messagesForm > div h3{
     background: none;
@@ -291,6 +292,10 @@ input.msgbtn:hover{
 }
 .user-btn .name-time > h1{
     width: 80%;
+}
+.msg-date{
+    align-self: center;
+    font-size: 24px;
 }
 .name-time > h2{
     padding: 0;

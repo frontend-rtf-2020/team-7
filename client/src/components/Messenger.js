@@ -337,7 +337,7 @@ const Messenger = ({
         users.splice(i, 1);
     if (users[users.length - 1] === '')
       users.splice(users.length - 1, 1);
-    return <div onClick={handleClick}>{outputForGroupChat(users)}</div>;
+    return <div className="chosen-users" onClick={handleClick}>{outputForGroupChat(users)}</div>;
   }
 
   //вывод элементов
@@ -375,26 +375,33 @@ const Messenger = ({
 
   function Messages() {
     const listMessages = chatShow.map((message) => {
-      if (message.split('\n')[0] === session.username){
-        return (
-            <div key={Math.random()} className="current-msg-frame">
-              <div className="name-time">
-                <h1 key={Math.random()}>{message.split('\n')[0]}</h1>
-                <h2 key={Math.random()}>{message.split('\n')[2]}</h2>
-              </div>
-              <h3 key={Math.random()}>{message.split('\n')[1]}</h3>
-            </div>
-        )
+      if (message.split('\n').length > 1) {
+        if (message.split('\n')[0] === session.username){
+            return (
+                <div key={Math.random()} className="current-msg-frame">
+                  <div className="name-time">
+                    <h1 key={Math.random()}>{message.split('\n')[0]}</h1>
+                    <h2 key={Math.random()}>{message.split('\n')[2]}</h2>
+                  </div>
+                  <h3 key={Math.random()}>{message.split('\n')[1]}</h3>
+                </div>
+            )
+          }
+          else{
+            return (
+                <div key={Math.random()} className="msg-frame">
+                  <div className="name-time">
+                    <h1 key={Math.random()}>{message.split('\n')[0]}</h1>
+                    <h2 key={Math.random()}>{message.split('\n')[2]}</h2>
+                  </div>
+                  <h3 key={Math.random()}>{message.split('\n')[1]}</h3>
+                </div>
+            )
+          }
       }
-      else{
+      else {
         return (
-            <div key={Math.random()} className="msg-frame">
-              <div className="name-time">
-                <h1 key={Math.random()}>{message.split('\n')[0]}</h1>
-                <h2 key={Math.random()}>{message.split('\n')[2]}</h2>
-              </div>
-              <h3 key={Math.random()}>{message.split('\n')[1]}</h3>
-            </div>
+            <h1 className="msg-date" key={Math.random()}>{message}</h1>
         )
       }
     });
@@ -412,7 +419,7 @@ const Messenger = ({
   useEffect(() => {
     const interval = setInterval(() => {
       updateListOfUsers() || updateDialogs() || updateMessages(sendingToCustomer);
-    }, 1000);
+    }, 10000000000000);
     return () => clearInterval(interval);
   });
 
@@ -432,10 +439,6 @@ const Messenger = ({
           <button className="create-btn" onClick={handleCreateGroupChat}>Создать беседу</button>
           <Dialogs />
         </div>
-        {sendingToCustomer === "" && openCreating === "" && (
-          <div className="blankChatForm">
-            <h3>Выберите, кому хотели бы написать</h3>
-          </div>
           {sendingToCustomer === "" && openCreating === "" && (
               <div className="blankChatForm">
                 <h3>Выберите, кому хотели бы написать</h3>
@@ -447,11 +450,6 @@ const Messenger = ({
                   <h2>
                     {sendingToCustomer}
                   </h2>
-                  <button onClick={addUsersInChat}>Добавить пользователя в чат</button>
-                  {sendingToCustomer.split(', ')[0] === session.username && (
-                      <button onClick={deleteUsersFromChat}>Удалить пользователя из чата</button>
-                  )}
-                  <button onClick={leaveFromChat}>Выйти из чата</button>
                   <div className="messagesForm">
                     <Messages/>
                   </div>
@@ -474,17 +472,16 @@ const Messenger = ({
                     />
                   </div>
                 </div>
-                <div className="usersForm">
-                  <h3>Участники чата</h3>
-                  <GroupChat/>
+                <div className="blankGroupChatForm">
+                  <h1>Участники чата</h1>
+                  <GroupChat />
+                  <button onClick={addUsersInChat}>Добавить пользователя в чат</button>
+                  {sendingToCustomer.split(', ')[0] === session.username && (
+                      <button onClick={deleteUsersFromChat}>Удалить пользователя из чата</button>
+                  )}
+                  <button onClick={leaveFromChat}>Выйти из чата</button>
                 </div>
               </div>
-            </div>
-            <div className="blankGroupChatForm">
-              <h1>Участники чата</h1>
-              <GroupChat />
-            </div>
-          </div>
         )}
         {room === "" && sendingToCustomer !== "" && openCreating === "" && (
           <div className="chatForm">
