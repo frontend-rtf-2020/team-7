@@ -433,7 +433,7 @@ const Messenger = ({
       <div className="messenger">
         <div className="usersForm">
           <div className="list-of-users">
-            <input type="text" placeholder="Поиск пользователей" onChange={handleSearch} />
+            <input type="text" placeholder="Поиск пользователей..." onChange={handleSearch} />
             <ListOfUsers />
           </div>
           <button className="create-btn" onClick={handleCreateGroupChat}>Создать беседу</button>
@@ -517,9 +517,12 @@ const Messenger = ({
             <h1>Добавить пользователей</h1>
             <div className="form-for-choose">
               <div className="all-users">
+                {openDeletingUsers === '' && (
+                    <input type="text" placeholder="Поиск пользователей..." onChange={handleSearchForGroupChat}/>
+                )}
                 <ChooseUsersForGroupChat />
               </div>
-              <img src={"/arrow.png"} height="50px" width="65px"/>
+              <img alt="Arrow." src={"/arrow.png"} height="50px" width="65px"/>
               <div className="chosen-users">
                 <ChosenUsers />
               </div>

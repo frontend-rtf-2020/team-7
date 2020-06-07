@@ -256,6 +256,7 @@ input.msgbtn:hover{
 }
 .list-of-users > input{
     width: 95%;
+    font-size: 20px;
 }
 .create-btn{
     position: relative;
@@ -295,6 +296,10 @@ input.msgbtn:hover{
 }
 .msg-date{
     align-self: center;
+    font-size: 24px;
+}
+.all-users input{
+    width: 93%;
     font-size: 24px;
 }
 .name-time > h2{
