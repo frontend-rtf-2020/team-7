@@ -141,6 +141,7 @@ const Messenger = ({
       str.unshift(session.username);
       str = str.toString().replace(/,/g, ", ");
       setSendingToCustomer(str);
+      setRoom(str);
     } else if (openAddingUsers === 'true') {
       let str;
       if (sendingToCustomer.split(', ')[sendingToCustomer.split(', ').length - 1] !== '')
@@ -152,6 +153,7 @@ const Messenger = ({
       };
       updateGroupChat(update);
       setSendingToCustomer(str);
+      setRoom(str);
     } else if (openDeletingUsers === 'true') {
       let str = sendingToCustomer;
       for (let i = 0; i < groupChat.length; i++)
@@ -164,6 +166,7 @@ const Messenger = ({
       };
       updateGroupChat(update);
       setSendingToCustomer(str);
+      setRoom(str);
     }
     zeroing();
   };
@@ -355,13 +358,20 @@ const Messenger = ({
 
   function Messages() {
     const listMessages = chatShow.map((message) => {
-      return (
-          <div key={Math.random()}>
-            <h1 key={Math.random()}>{message.split('\n')[0]}</h1>
-            <h3 key={Math.random()}>{message.split('\n')[1]}</h3>
-            <h2 key={Math.random()}>{message.split('\n')[2]}</h2>
-          </div>
-      )
+      if (message.split('\n').length > 1) {
+        return (
+            <div key={Math.random()}>
+              <h1 key={Math.random()}>{message.split('\n')[0]}</h1>
+              <h3 key={Math.random()}>{message.split('\n')[1]}</h3>
+              <h2 key={Math.random()}>{message.split('\n')[2]}</h2>
+            </div>
+        )
+      }
+      else {
+        return (
+            <h1 key={Math.random()}>{message}</h1>
+        )
+      }
     });
     return <div ref={ref} onClick={handleScroll}>{listMessages}</div>;
   }

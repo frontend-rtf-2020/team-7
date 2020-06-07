@@ -15,23 +15,23 @@ async function chatList(user, socket) {
   const {fromUser} = user;
   let users = await Chat.find({fromUser: fromUser}, 'toUser -_id');
   let toCurrentUsers = await Chat.find({toUser: fromUser}, 'fromUser -_id');
-  let groupChat = await Chat.find({room: /[\w\s]*,/}, 'room -_id');
+  let groupChat = await Chat.find({room: /[\w\s\d,]*/}, 'room -_id');
   let list = [];
   for (let element of users) {
     let str = element.toString();
-    str = str.replace("{ toUser: '", '');
+    str = str.replace(/{[\w\s]*toUser:\s*'/i, '');
     str = str.replace("' }", '');
     if (!list.includes(str) && str !== '{}') list.push(str);
   }
   for (let element of toCurrentUsers) {
     let str = element.toString();
-    str = str.replace("{ fromUser: '", '');
+    str = str.replace(/{[\w\s]*fromUser:\s*'/i, '');
     str = str.replace("' }", '');
     if (!list.includes(str) && str !== '{}') list.push(str);
   }
   for (let element of groupChat) {
     let str = element.toString();
-    str = str.replace("{ room: '", '');
+    str = str.replace(/{[\w\s]*room:\s*'/i, '');
     str = str.replace("' }", '');
     if (!list.includes(str) && str.includes(fromUser)) list.push(str);
   }
@@ -80,13 +80,20 @@ async function messageList(user, socket) {
 
 function parseStr(messages) {
   let list = [];
+  let dmyArray = []; //day-month-year
   for (let element of messages) {
     let str = element.toString();
     str = str.replace(/{[\w\s,:']*fromUser:\s*'/i, '');
     str = str.replace(/'[\w\s,:']*message:\s*'/i, '\n');
     let date = new Date(str.split(/'[\s,]*[\s]*time:\s/i)[1].replace(/\s*}/i, '')).toString();
-    date = date.replace(/\w{3}\s(\w{3})\s(\d{2})\s(\d{4})\s(\d{2}):(\d{2})[\w\s\d,:'+()]*/i, '$4:$5\t$2-$1-$3');
     str = str.replace(/'[\s,]*[\s]*time:\s(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):\d{2}.\d{3}Z\s*}/i, '\n' + date);
+    let dmy = str.split('\n')[2].replace(/\s\d{2}:\d{2}[\w\s\d,:'+()]*}/i, '');
+    dmy = dmy.replace(/\w{3}\s(\w{3})\s(\d{2})\s(\d{4})\s\d{2}:\d{2}[\w\s\d,:'+()]*/i, '$2-$1-$3');
+    if (!dmyArray.includes(dmy)) {
+      dmyArray.push(dmy);
+      list.push(dmy);
+    }
+    str = str.replace(/\w{3}\s(\w{3})\s(\d{2})\s(\d{4})\s(\d{2}):(\d{2})[\w\s\d,:'+()]*/i, '$4:$5');
     list.push(str);
   }
   if (list.length === 0) list.push('Список сообщений пуст');
