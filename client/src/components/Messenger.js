@@ -419,7 +419,7 @@ const Messenger = ({
   useEffect(() => {
     const interval = setInterval(() => {
       updateListOfUsers() || updateDialogs() || updateMessages(sendingToCustomer);
-    }, 10000000000000);
+    }, 1000);
     return () => clearInterval(interval);
   });
 
