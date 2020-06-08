@@ -129,7 +129,6 @@ ul{
     border:4px solid #4c0855;
     border-left: none;
     white-space: pre-line;
-    display: flex;
     flex-direction: column;
     justify-content: flex-end;
 }
