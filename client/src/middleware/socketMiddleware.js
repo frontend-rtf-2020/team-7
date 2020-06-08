@@ -1,6 +1,5 @@
 import { socket } from "../index";
 
-
 //кастомный миддл варе, необходимый для использования socket.io на клиенте
 export default function socketMiddleware() {
   return ({ dispatch }) => (next) => (action) => {

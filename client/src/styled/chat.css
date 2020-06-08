@@ -1,14 +1,10 @@
-.inline {
-    display: inline;
-    margin-right: 20%;
-}
 .inline-block {
     display:flex;
+    flex-direction: column;
     position:absolute;
     left:50%;
     top:50%;
     transform: translate(-50%,-50%);
-    background-color: rgb(147, 236, 241);
     border-radius: 10px;
 }
 .chatForm {
@@ -27,6 +23,104 @@
     background: #2a0c53;
     border:4px solid #4c0855;
 }
+.blankGroupChatForm{
+    height:650px;
+    border-radius: 0 10px 10px 0;
+    background: #2a0c53;
+    border:4px solid #4c0855;
+    display: flex;
+    flex-direction: column;
+}
+.blankGroupChatForm .chosen-users .user-btn{
+    font-size: 16px;
+}
+.blankGroupChatForm .chosen-users{
+    width: 97%;
+}
+.form-for-choose{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 10px 25px 10px 25px;
+}
+.blankGroupChatForm h1{
+    margin: 0;
+    padding-top: 23px;
+    padding-bottom: 23px;
+    text-align: center;
+    background: #6926be;
+    font-size: 24px;
+}
+.form-for-choose .all-users{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 4px solid #ed7bff;
+    width: 400px;
+    height: 485px;
+    overflow: auto;
+    padding: 4px;
+}
+.form-for-choose div{
+    width: 95%;
+}
+.form-for-choose .all-users div .user-btn{
+    border-radius: 0;
+    background: #3b4ec2;
+    box-shadow: none;
+    width: 100%;
+    font-size: 29px;
+    margin: 4px 0;
+}
+.form-for-choose .chosen-users{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 4px solid #ed7bff;
+    width: 400px;
+    height: 485px;
+    overflow: auto;
+    padding: 4px;
+}
+.chosen-users{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 400px;
+    height: 485px;
+    overflow: auto;
+    padding: 4px;
+}
+.btn-success{
+    background: #6926be;
+    padding: 10px;
+}
+.btn-success .success{
+    float: right;
+    margin: 0 25px;
+}
+.btn-success .cancel{
+    margin: 0 25px;
+}
+.form-for-choose .chosen-users div .user-btn{
+    border-radius: 0;
+    background: #8959ff;
+    box-shadow: none;
+    font-size: 29px;
+    width: 100%;
+    margin: 4px 0;
+}
+.chosen-users .user-btn{
+    border-radius: 0;
+    background: #8959ff;
+    box-shadow: none;
+    font-size: 29px;
+    width: 100%;
+    margin: 4px 0;
+}
+ul{
+    width: 100%;
+}
 .messagesForm {
     width:100%;
     height:495px;
@@ -35,10 +129,70 @@
     border:4px solid #4c0855;
     border-left: none;
     white-space: pre-line;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+.messagesForm > div{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-left: 10px;
+    padding-right: 10px;
+    overflow: auto;
+}
+.messagesForm > div h3{
+    background: none;
+    margin: 0;
+    padding: 0 0 2px 12px;
+    left: auto;
+    top: auto;
+    transform: initial;
+    color: #2f1b7d;
+    font-weight: normal;
+    font-size: 16px;
+    text-align: left;
+    width: 95%;
+    word-wrap: break-word;
+}
+.messagesForm > div .name-time > h1{
+    padding: 0 0 0 8px;
+    font-size: 16px;
+    height: 100%;
+    margin: 0;
+    flex-grow: 1;
+    align-self: flex-start;
+    font-weight: normal;
+    color: #04050e;
+}
+.messagesForm > div .name-time > h2{
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    line-height: normal;
+    font-weight: normal;
+    font-size: 14px;
+    color: #202b6b;
+}
+.messagesForm > div .current-msg-frame{
+    background: #8959ff;
+    align-self: flex-end;
+    width: 33%;
+    margin-bottom: 10px;
+}
+.messagesForm > div .msg-frame{
+    background: #e8b6ff;
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    width: 33%;
+    box-shadow: none;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
 }
 .usersForm {
     float: left;
-    width:200px;
+    width:250px;
     height:650px;
     overflow: auto;
     background-color: #1d2e84;
@@ -46,6 +200,18 @@
     border: 4px solid #4c0855;
     border-right: none;
     white-space: pre-line;
+}
+.logout{
+    display: flex;
+    flex-direction: row;
+    background: #4e26be;
+}
+.logout > h1{
+    flex-grow: 1;
+    padding-left: 20px;
+}
+.messenger{
+    display: flex;
 }
 h3 {
     display: inline-block;
@@ -86,37 +252,124 @@ input.msgbtn:hover{
 }
 .list-of-users{
     border-bottom: 4px solid #4c0855;
-    padding: 1.7vh 5px;
+    padding: 2.3vh 5px;
     background: #1d2e84;
+}
+.list-of-users > input{
+    width: 95%;
+    font-size: 20px;
+}
+.create-btn{
+    position: relative;
+    left: 10%;
+}
+.usersForm ul button{
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    width: 100%;
+    background: #3b4ec2;
+    box-shadow: none;
+    display: flex;
+    flex-direction: column;
+}
+.name-time{
+    font-size: 10px;
+    font-style: normal;
+    display: flex;
+    padding: 0;
+    width: 100%;
+    text-align: left;
+}
+.name-time > h1{
+    padding: 0 0 0 8px;
+    font-size: 16px;
+    height: 100%;
+    margin: 0;
+    flex-grow: 1;
+    align-self: flex-start;
+    font-weight: normal;
+    color: #ceda1e;
+    overflow: hidden;
+}
+.user-btn .name-time > h1{
+    width: 80%;
+}
+.msg-date{
+    align-self: center;
+    font-size: 24px;
+}
+.all-users input{
+    width: 93%;
+    font-size: 24px;
+}
+.name-time > h2{
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    line-height: normal;
+    font-weight: normal;
+    font-size: 14px;
+    color: #61b6ff;
+    border-radius: 0 0 0 0;
+}
+.usersForm ul button h3{
+    background: none;
+    margin: 0;
+    padding: 0 0 2px 12px;
+    left: auto;
+    top: auto;
+    transform: initial;
+    color: #61b6ff;
+    font-weight: normal;
+    font-size: 13px;
+    width: 94%;
+    overflow: hidden;
+    text-align: left;
+    border-radius: 0 0 0 0;
+}
+.usersForm ul .current-user-btn{
+    background: #b8d5fd;
+    box-shadow: none;
+}
+.usersForm ul .current-user-btn h1{
+    box-shadow: none;
+    color: #060708;
+}
+.usersForm ul .current-user-btn h2{
+    box-shadow: none;
+    color: #3a1b6f;
+}
+.usersForm ul .current-user-btn h3{
+    box-shadow: none;
+    color: #6f7f99;
 }
 h1{
     color: #fffe77;
+    font-family: 'Lucida Grande' ,'Montserrat', sans-serif;
 }
 h2{
-    margin:0;
-    padding: 2vh 25px;
-    display: block;
-    height: 3vh;
+    margin: 20px 25px;
+    display: flex;
+    line-height: 34px;
+    height: 34px;
     border-radius: 0 10px 0 0;
     color: white;
+    justify-content: space-between;
+    font-family: 'Lucida Grande' ,'Montserrat', sans-serif;
+    overflow: hidden;
 }
-ul button{
+h2 > button{
     margin: 0;
-    border-radius: 0;
-    width: 100%;
-    font-size: 15px;
-    background: #3c52be;
-    box-shadow: none;
+    padding: 0 10px;
+
 }
 ul{
     margin: 0;
     padding: 0;
     color: white;
 }
-.current-user-btn{
-    background: #b8d5fd;
-    box-shadow: none;
-}
+
 .msg{
     display:flex;
     justify-content: space-between;

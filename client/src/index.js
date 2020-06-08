@@ -5,7 +5,7 @@ import configureStore from "./store/store";
 import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
 import { checkLoggedIn } from "./util/session";
-import io from 'socket.io-client';
+import io from "socket.io-client";
 //создаем подключение, нужно доработать (вынести куда-нибудь отсюда адрес сервева)
 //также при хостинге нужно менять адрес сервера на соответствующий
 export const socket = io();
