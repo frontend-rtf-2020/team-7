@@ -34,19 +34,13 @@ userRouter.post('/sendemail', async (req, res) => {
         subject: 'Проверочный код', // Subject line
         text: 'Проверочный код: ' + code, // plain text body
       });
-      const newUser = new User({ email: email, username: username, code: code });
+      const newUser = new User({ email: email, code: code });
       await newUser.save();
       res.status(400).json({
         message: 'Письмо с кодом подтверждения отправлено!',
       });
     }
-    const match = await User.findOne({ email: email, code: /[\w\d]*/ });
-    if (match.length !== 0) {
-      res.status(400).json({
-        message: 'Подтвердите ваш email, введя код подтверждения из письма!',
-      });
-    }
-    else if (user && code === '') {
+    if (user && code === '') {
       res.status(400).json({
         message: 'Email или username уже используются!',
       });

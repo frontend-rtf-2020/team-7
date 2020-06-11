@@ -32,24 +32,21 @@ const cors = require('cors');
     apiRouter.use('/users', userRoutes);
     apiRouter.use('/session', sessionRoutes);
     const path = require('path');
-    let staticPath = path.join(__dirname, '../client/build');
-    app.use(express.static(staticPath));
+    app.use(express.static(path.join(__dirname, 'client')));
     app.get('/*', function (req, res) {
-      res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
+      res.sendFile(path.join(__dirname, 'client', 'index.html'));
     });
 
     //определяем действие при подключении
     io.on('connection', (socket) => {
-      console.log("New client connected");
+      console.log('User connected');
+      //действия, которые выполняются при вызове на клиенте
       socket.on('saveMessage', (message) => chatHub.saveMessage(message));
       socket.on('chatList', (user) => chatHub.chatList(user, socket));
       socket.on('messageList', (user) => chatHub.messageList(user, socket));
       socket.on('allUsers', (user) => chatHub.allUsers(user, socket));
       socket.on('deleteDialog', (user) => chatHub.deleteDialog(user));
       socket.on('updateGroupChat', (data) => chatHub.updateGroupChat(data));
-      socket.on("disconnect", () => {
-        console.log("Client disconnected");
-      });
     });
 
     http.listen(process.env.PORT || 5000);

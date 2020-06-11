@@ -11,6 +11,7 @@ async function saveMessage(mes) {
 }
 
 async function chatList(user, socket) {
+  //обрабатываем информацию
   const { fromUser } = user;
   let users = await Chat.find({ fromUser: fromUser }, 'toUser -_id');
   let toCurrentUsers = await Chat.find({ toUser: fromUser }, 'fromUser -_id');
@@ -19,19 +20,19 @@ async function chatList(user, socket) {
   for (let element of users) {
     let str = element.toString();
     str = str.replace(/{[\w\s]*toUser:\s*'/i, '');
-    str = str.replace(/'\s*}/, '');
+    str = str.replace("' }", '');
     if (!list.includes(str) && str !== '{}') list.push(str);
   }
   for (let element of toCurrentUsers) {
     let str = element.toString();
     str = str.replace(/{[\w\s]*fromUser:\s*'/i, '');
-    str = str.replace(/'\s*}/, '');
+    str = str.replace("' }", '');
     if (!list.includes(str) && str !== '{}') list.push(str);
   }
   for (let element of groupChat) {
     let str = element.toString();
     str = str.replace(/{[\w\s]*room:\s*'/i, '');
-    str = str.replace(/'\s*}/, '');
+    str = str.replace("' }", '');
     if (!list.includes(str) && str.includes(fromUser)) list.push(str);
   }
   for (let i = 0; i < list.length; i++) {
@@ -55,7 +56,7 @@ async function chatList(user, socket) {
     lastMessage = lastMessage.toString().replace(/{[\w\s,:']*fromUser:\s*'/i, '\n\n');
     lastMessage = lastMessage.replace(/'[\w\s,:']*message:\s*'/i, ': ');
     let date = new Date(
-      lastMessage.split(/'[\s,]*time:\s/i)[1].replace(/\s*}/i, ''),
+      lastMessage.split(/'[\s,]*[\s]*time:\s/i)[1].replace(/\s*}/i, ''),
     ).toString();
     date = date.replace(/\w{3}\s\w{3}\s\d{2}\s\d{4}\s(\d{2}):(\d{2})[\w\s\d,:'+()]*/i, '$1:$2');
     lastMessage = lastMessage.replace(
@@ -66,6 +67,7 @@ async function chatList(user, socket) {
       lastMessage = lastMessage.replace(fromUser + ':', 'Вы:');
     list[i] += lastMessage;
   }
+  //отправляем вызываем на клиенте действие по событию 'returnChatList'
   return socket.emit('returnChatList', list);
 }
 
@@ -119,9 +121,9 @@ async function allUsers(user, socket) {
   let list = [];
   for (let element of users) {
     let str = element.toString();
-    str = str.replace(/{[\w\s,:']*username:\s*'/i, '');
-    str = str.replace(/'\s*}/, '');
-    if (str !== username && str.trim() !== '' && str !== '{}') list.push(str);
+    str = str.replace("{ username: '", '');
+    str = str.replace("' }", '');
+    if (str !== username) list.push(str);
   }
   return socket.emit('returnAllUsers', list);
 }
