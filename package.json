@@ -1,0 +1,9 @@
+{
+  "name": "best-messenger",
+  "version": "0.1.0",
+  "scripts": {
+    "postinstall": "npm install --prefix client && npm install --prefix server",
+    "build": "npm run build --prefix client",
+    "start": "node server/index.js"
+  }
+}

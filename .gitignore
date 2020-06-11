@@ -1,2 +1,18 @@
-node_modules
-/.idea
+# dependencies
+/node_modules
+/client/node_modules
+/server/node_modules
+
+# production
+/build
+/client/build
+/server/build
+
+# misc
+/server/.env
+.idea/
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
