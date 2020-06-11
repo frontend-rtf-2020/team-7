@@ -1,7 +1,7 @@
 const Joi = require('joi');
 
 const email = Joi.string().email().required();
-const username = Joi.string().alphanum().min(3).max(30).required();
+const username = Joi.string().alphanum().min(3).max(20).required();
 const message =
   'должен содержать от 6 до 16 символов, ' +
   'иметь как минимум одну заглавную букву, ' +

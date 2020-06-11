@@ -249,11 +249,11 @@ const Messenger = ({
           {user.split("\n\n")[0] === sendingToCustomer && (
             <button
               className="current-user-btn"
-              key={user}
+              key='0'
               value={user}
               onClick={handleClick}
             >
-              <div className="name-time">
+              <div data-key={user} className="name-time">
                 <h1 key="1" data-key={user}>
                   {user.split("\n\n")[0]}
                 </h1>
@@ -269,11 +269,11 @@ const Messenger = ({
           {user.split("\n\n")[0] !== sendingToCustomer && (
             <button
               className="user-btn"
-              key={user}
+              key='0'
               value={user}
               onClick={handleClick}
             >
-              <div className="name-time">
+              <div data-key={user} className="name-time">
                 <h1 key="1" data-key={user}>
                   {user.split("\n\n")[0]}
                 </h1>
@@ -467,8 +467,8 @@ const Messenger = ({
   useEffect(() => {
     const interval = setInterval(() => {
       updateListOfUsers() ||
-        updateDialogs() ||
-        updateMessages(sendingToCustomer);
+      updateDialogs() ||
+      updateMessages(sendingToCustomer);
     }, 1000);
     return () => clearInterval(interval);
   });
