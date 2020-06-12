@@ -1,5 +1,6 @@
 const Chat = require('../models/chat');
 const User = require('../models/user-model');
+const moment = require('moment-timezone');
 
 async function saveMessage(mes) {
   const { fromUser, toUser, message } = mes;
@@ -54,17 +55,21 @@ async function chatList(user, socket) {
         .limit(1);
     lastMessage = lastMessage.toString().replace(/{[\w\s,:']*fromUser:\s*'/i, '\n\n');
     lastMessage = lastMessage.replace(/'[\w\s,:']*message:\s*'/i, ': ');
-    let date = new Date(
-      lastMessage.split(/'[\s,]*time:\s/i)[1].replace(/\s*}/i, ''),
-    ).toString();
-    date = date.replace(/\w{3}\s\w{3}\s\d{2}\s\d{4}\s(\d{2}):(\d{2})[\w\s\d,:'+()]*/i, '$1:$2');
-    lastMessage = lastMessage.replace(
-      /'[\s,]*[\s]*time:\s(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):\d{2}.\d{3}Z\s*}/i,
-      '\n\n' + date,
-    );
     if (lastMessage.includes(fromUser + ':'))
       lastMessage = lastMessage.replace(fromUser + ':', 'Вы:');
     list[i] += lastMessage;
+
+  }
+  list.sort((a,b) =>
+      new moment(a.split(/'[\s,]*time:\s/i)[1].replace(/\s*}/i, '')) - new moment(b.split(/'[\s,]*time:\s/i)[1].replace(/\s*}/i, ''))
+  ).reverse();
+  for (let i = 0; i < list.length; i++) {
+    moment.locale('ru');
+    let date = moment(list[i].split(/'[\s,]*time:\s/i)[1].replace(/\s*}/i, '')).tz('Asia/Yekaterinburg').format('LT');
+    list[i] = list[i].replace(
+        /'[\s,]*time:[\s\d\w-:.]*}/i,
+        '\n\n' + date,
+    );
   }
   return socket.emit('returnChatList', list);
 }
@@ -95,18 +100,17 @@ function parseStr(messages) {
     let str = element.toString();
     str = str.replace(/{[\w\s,:']*fromUser:\s*'/i, '');
     str = str.replace(/'[\w\s,:']*message:\s*'/i, '\n');
-    let date = new Date(str.split(/'[\s,]*[\s]*time:\s/i)[1].replace(/\s*}/i, '')).toString();
-    str = str.replace(
-      /'[\s,]*[\s]*time:\s(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):\d{2}.\d{3}Z\s*}/i,
-      '\n' + date,
-    );
-    let dmy = str.split('\n')[2].replace(/\s\d{2}:\d{2}[\w\s\d,:'+()]*}/i, '');
-    dmy = dmy.replace(/\w{3}\s(\w{3})\s(\d{2})\s(\d{4})\s\d{2}:\d{2}[\w\s\d,:'+()]*/i, '$2-$1-$3');
+    moment.locale('ru');
+    let date = moment(str.split(/'[\s,]*time:\s/i)[1].replace(/\s*}/i, '')).tz('Asia/Yekaterinburg').format('LLL');
+    let dmy = date.split(',')[0];
     if (!dmyArray.includes(dmy)) {
       dmyArray.push(dmy);
       list.push(dmy);
     }
-    str = str.replace(/\w{3}\s(\w{3})\s(\d{2})\s(\d{4})\s(\d{2}):(\d{2})[\w\s\d,:'+()]*/i, '$4:$5');
+    str = str.replace(
+        /'[\s,]*time:[\s\d\w-:.]*}/i,
+        '\n' + date.split(',')[1],
+    );
     list.push(str);
   }
   if (list.length === 0) list.push('Список сообщений пуст');
