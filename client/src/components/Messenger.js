@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { connect } from "react-redux";
 import {
   logout,
@@ -96,10 +96,19 @@ const Messenger = ({
     setGroupChat(list);
   };
 
-  //отключение кнопки enter
+  //отправка сообщения на нажатие enter
   const pressEnter = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
+      const mes = {
+        fromUser: session.username,
+        toUser: sendingToCustomer,
+        message: messageField,
+      };
+      saveMessage(mes);
+      setMessageField("");
+      updateMessages(sendingToCustomer);
+      updateDialogs();
     }
   };
 
@@ -235,12 +244,12 @@ const Messenger = ({
   };
 
   //список активных диалогов
-  function updateDialogs() {
+  const updateDialogs = useCallback(() => {
     const currentUser = {
       fromUser: session.username,
     };
     chatList(currentUser);
-  }
+  }, [chatList, session.username]);
 
   function Dialogs() {
     const listMessages = usersList.map((user) => {
@@ -249,7 +258,7 @@ const Messenger = ({
           {user.split("\n\n")[0] === sendingToCustomer && (
             <button
               className="current-user-btn"
-              key='0'
+              key="0"
               value={user}
               onClick={handleClick}
             >
@@ -269,7 +278,7 @@ const Messenger = ({
           {user.split("\n\n")[0] !== sendingToCustomer && (
             <button
               className="user-btn"
-              key='0'
+              key="0"
               value={user}
               onClick={handleClick}
             >
@@ -293,12 +302,12 @@ const Messenger = ({
   }
 
   //все пользователи чата
-  function updateListOfUsers() {
+  const updateListOfUsers = useCallback(() => {
     const currentUser = {
       username: session.username,
     };
     allUsers(currentUser);
-  }
+  }, [allUsers, session.username]);
 
   function ListOfUsers() {
     const listAllUsers = listOfAllUsers.map((user) => (
@@ -377,11 +386,7 @@ const Messenger = ({
     for (let i = 0; i < users.length; i++)
       if (users[i] === session.username) users.splice(i, 1);
     if (users[users.length - 1] === "") users.splice(users.length - 1, 1);
-    return (
-      <div className="chosen-users" onClick={handleClick}>
-        {outputForGroupChat(users)}
-      </div>
-    );
+    return <div onClick={handleClick}>{outputForGroupChat(users)}</div>;
   }
 
   //вывод элементов
@@ -389,7 +394,7 @@ const Messenger = ({
     return element.map((user) => {
       if (user !== "")
         return (
-          <ul key={user}>
+          <ul>
             <button className="user-btn" key={user} value={user}>
               {user}
             </button>
@@ -400,13 +405,16 @@ const Messenger = ({
   }
 
   //список сообщений
-  function updateMessages(element) {
-    const dialog = {
-      fromUser: session.username,
-      toUser: element,
-    };
-    messageList(dialog);
-  }
+  const updateMessages = useCallback(
+    (element) => {
+      const dialog = {
+        fromUser: session.username,
+        toUser: element,
+      };
+      messageList(dialog);
+    },
+    [messageList, session.username]
+  );
 
   const ref = React.createRef();
 
@@ -467,11 +475,19 @@ const Messenger = ({
   useEffect(() => {
     const interval = setInterval(() => {
       updateListOfUsers() ||
-      updateDialogs() ||
-      updateMessages(sendingToCustomer);
-    }, 1000);
+        updateDialogs() ||
+        updateMessages(sendingToCustomer);
+    }, 500);
     return () => clearInterval(interval);
-  });
+  }, [
+    usersList,
+    chatShow,
+    getAllUsers,
+    sendingToCustomer,
+    updateDialogs,
+    updateListOfUsers,
+    updateMessages,
+  ]);
 
   return (
     <form className="inline-block">
@@ -528,7 +544,9 @@ const Messenger = ({
             </div>
             <div className="blankGroupChatForm">
               <h1>Участники чата</h1>
-              <GroupChat />
+              <div className="chosen-users">
+                <GroupChat />
+              </div>
               <button onClick={addUsersInChat}>
                 Добавить пользователя в чат
               </button>
