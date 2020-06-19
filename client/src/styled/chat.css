@@ -14,6 +14,7 @@
     border-radius: 0 10px 10px 0;
     background: #6a2fb9;
     border:4px solid #4c0855;
+    flex-grow: 1;
 }
 .blankChatForm{
     float: left;
@@ -22,6 +23,9 @@
     border-radius: 0 10px 10px 0;
     background: #2a0c53;
     border:4px solid #4c0855;
+}
+.participants{
+    width: 310px;
 }
 .blankGroupChatForm{
     height:650px;
