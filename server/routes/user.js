@@ -11,9 +11,11 @@ const userRouter = express.Router();
 
 userRouter.post('/sendemail', async (req, res) => {
   try {
-    const { email, username, password, code } = req.body;
+    const { email, username, password } = req.body;
     await Joi.validate({ email, username, password }, validation.signUp);
-    const user = await User.findOne({ $or: [{ email: email }, { username: username }] });
+    const user = await User.findOne({
+      $or: [{ email: email }, { username: username }],
+    });
     if (!user) {
       const transporter = nodemailer.createTransport({
         host: 'smtp.yandex.ru',
@@ -27,26 +29,28 @@ userRouter.post('/sendemail', async (req, res) => {
 
       const code = crypto.randomBytes(10).toString('hex');
 
-      // send mail with defined transport object
       const info = transporter.sendMail({
         from: process.env.BOTEMAIL, // sender address
         to: email, // list of receivers
         subject: 'Проверочный код', // Subject line
         text: 'Проверочный код: ' + code, // plain text body
       });
-      const newUser = new User({ email: email, username: username, code: code });
+      const newUser = new User({
+        email: email,
+        username: username,
+        code: code,
+      });
       await newUser.save();
       res.status(400).json({
         message: 'Письмо с кодом подтверждения отправлено!',
       });
     }
     const match = await User.findOne({ email: email, code: /[\w\d]*/ });
-    if (match.length !== 0) {
+    if (match !== null) {
       res.status(400).json({
         message: 'Подтвердите ваш email, введя код подтверждения из письма!',
       });
-    }
-    else if (user && code === '') {
+    } else if (user) {
       res.status(400).json({
         message: 'Email или username уже используются!',
       });
@@ -73,6 +77,14 @@ userRouter.post('/signup', async (req, res) => {
     if (!user && checkUser && code !== '') {
       res.status(400).json({
         message: 'Проверьте введенный проверочный код!',
+      });
+    } else if (!user && !checkUser) {
+      res.status(400).json({
+        message: 'Проверьте ваш email!',
+      });
+    } else if (!user && code === '') {
+      res.status(400).json({
+        message: 'Введите проверочный код!',
       });
     }
   } catch (err) {

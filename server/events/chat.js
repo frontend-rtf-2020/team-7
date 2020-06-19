@@ -3,12 +3,39 @@ const User = require('../models/user-model');
 const moment = require('moment-timezone');
 
 async function saveMessage(mes) {
-  const { fromUser, toUser, message } = mes;
+  const {fromUser, toUser, message} = mes;
   let newMessage;
-  if (toUser.split(', ').length === 1)
-    newMessage = new Chat({ fromUser: fromUser, toUser: toUser, message: message });
-  else newMessage = new Chat({ room: toUser, fromUser: fromUser, message: message });
-  if (message.trim() !== '') await newMessage.save();
+  if (typeof message === "object") {
+    if (toUser.split(', ').length === 1)
+      newMessage = new Chat({
+        fromUser: fromUser,
+        toUser: toUser,
+        message: 'Голосовое сообщение',
+        voice: message,
+      });
+    else
+      newMessage = new Chat({
+        room: toUser,
+        fromUser: fromUser,
+        message: 'Голосовое сообщение',
+        voice: message,
+      });
+    await newMessage.save();
+  } else {
+    if (toUser.split(', ').length === 1)
+      newMessage = new Chat({
+        fromUser: fromUser,
+        toUser: toUser,
+        message: message,
+      });
+    else
+      newMessage = new Chat({
+        room: toUser,
+        fromUser: fromUser,
+        message: message,
+      });
+    if (message.trim() !== '') await newMessage.save();
+  }
 }
 
 async function chatList(user, socket) {
@@ -50,46 +77,60 @@ async function chatList(user, socket) {
         .sort({ time: -1 })
         .limit(1);
     else
-      lastMessage = await Chat.find({ room: list[i] }, 'fromUser message time -_id')
+      lastMessage = await Chat.find(
+        { room: list[i] },
+        'fromUser message time -_id',
+      )
         .sort({ time: -1 })
         .limit(1);
-    lastMessage = lastMessage.toString().replace(/{[\w\s,:']*fromUser:\s*'/i, '\n\n');
+    lastMessage = lastMessage
+      .toString()
+      .replace(/{[\w\s,:']*fromUser:\s*'/i, '\n\n');
     lastMessage = lastMessage.replace(/'[\w\s,:']*message:\s*'/i, ': ');
     if (lastMessage.includes(fromUser + ':'))
       lastMessage = lastMessage.replace(fromUser + ':', 'Вы:');
     list[i] += lastMessage;
-
   }
-  list.sort((a,b) =>
-      new moment(a.split(/'[\s,]*time:\s/i)[1].replace(/\s*}/i, '')) - new moment(b.split(/'[\s,]*time:\s/i)[1].replace(/\s*}/i, ''))
-  ).reverse();
+  list
+    .sort(
+      (a, b) =>
+        new moment(a.split(/'[\s,]*time:\s/i)[1].replace(/\s*}/i, '')) -
+        new moment(b.split(/'[\s,]*time:\s/i)[1].replace(/\s*}/i, '')),
+    )
+    .reverse();
   for (let i = 0; i < list.length; i++) {
     moment.locale('ru');
-    let date = moment(list[i].split(/'[\s,]*time:\s/i)[1].replace(/\s*}/i, '')).tz('Asia/Yekaterinburg').format('LT');
-    list[i] = list[i].replace(
-        /'[\s,]*time:[\s\d\w-:.]*}/i,
-        '\n\n' + date,
-    );
+    let date = moment(list[i].split(/'[\s,]*time:\s/i)[1].replace(/\s*}/i, ''))
+      .tz('Asia/Yekaterinburg')
+      .format('LT');
+    list[i] = list[i].replace(/'[\s,]*time:[\s\d\w-:.]*}/i, '\n\n' + date);
   }
   return socket.emit('returnChatList', list);
 }
 
 async function messageList(user, socket) {
-  const { fromUser, toUser } = user;
-  if (toUser.split(', ').length === 1) {
-    let messages = await Chat.find(
-      {
-        $or: [
-          { fromUser: fromUser, toUser: toUser },
-          { fromUser: toUser, toUser: fromUser },
-        ],
-      },
-      'time fromUser message -_id',
-    ).sort('time');
-    return socket.emit('returnMessageList', parseStr(messages));
-  } else {
-    let messages = await Chat.find({ room: toUser }, 'time fromUser message -_id').sort('time');
-    return socket.emit('returnMessageList', parseStr(messages));
+  try {
+    const {fromUser, toUser} = user;
+    if (toUser.split(', ').length === 1) {
+      let messages = await Chat.find(
+          {
+            $or: [
+              {fromUser: fromUser, toUser: toUser},
+              {fromUser: toUser, toUser: fromUser},
+            ],
+          },
+          'time fromUser message voice -_id',
+      ).sort('time');
+      return socket.emit('returnMessageList', parseStr(messages));
+    } else {
+      let messages = await Chat.find(
+          {room: toUser},
+          'time fromUser message voice -_id',
+      ).sort('time');
+      return socket.emit('returnMessageList', parseStr(messages));
+    }
+  } catch (err) {
+    console.log(err);
   }
 }
 
@@ -97,21 +138,24 @@ function parseStr(messages) {
   let list = [];
   let dmyArray = []; //day-month-year
   for (let element of messages) {
-    let str = element.toString();
-    str = str.replace(/{[\w\s,:']*fromUser:\s*'/i, '');
-    str = str.replace(/'[\w\s,:']*message:\s*'/i, '\n');
-    moment.locale('ru');
-    let date = moment(str.split(/'[\s,]*time:\s/i)[1].replace(/\s*}/i, '')).tz('Asia/Yekaterinburg').format('LLL');
-    let dmy = date.split(',')[0];
-    if (!dmyArray.includes(dmy)) {
-      dmyArray.push(dmy);
-      list.push(dmy);
+    if (element.message === 'Голосовое сообщение') {
+      list.push(element.voice)
+    } else {
+      let str = element.toString();
+      str = str.replace(/{[\w\s,:']*fromUser:\s*'/i, '');
+      str = str.replace(/'[\w\s,:']*message:\s*'/i, '\n');
+      moment.locale('ru');
+      let date = moment(str.split(/'[\s,]*time:\s/i)[1].replace(/\s*}/i, ''))
+          .tz('Asia/Yekaterinburg')
+          .format('LLL');
+      let dmy = date.split(',')[0];
+      if (!dmyArray.includes(dmy)) {
+        dmyArray.push(dmy);
+        list.push(dmy);
+      }
+      str = str.replace(/'[\s,]*time:[\s\d\w-:.]*}/i, '\n' + date.split(',')[1]);
+      list.push(str);
     }
-    str = str.replace(
-        /'[\s,]*time:[\s\d\w-:.]*}/i,
-        '\n' + date.split(',')[1],
-    );
-    list.push(str);
   }
   if (list.length === 0) list.push('Список сообщений пуст');
   return list;
@@ -119,7 +163,9 @@ function parseStr(messages) {
 
 async function allUsers(user, socket) {
   const { username } = user;
-  let users = await User.find({}, 'username -_id').collation({ locale: 'en' }).sort('username');
+  let users = await User.find({}, 'username -_id')
+    .collation({ locale: 'en' })
+    .sort('username');
   let list = [];
   for (let element of users) {
     let str = element.toString();
@@ -147,6 +193,13 @@ async function updateGroupChat(data) {
   else await Chat.deleteMany({ room: toUser });
 }
 
-const chatHub = { saveMessage, chatList, messageList, allUsers, deleteDialog, updateGroupChat };
+const chatHub = {
+  saveMessage,
+  chatList,
+  messageList,
+  allUsers,
+  deleteDialog,
+  updateGroupChat,
+};
 
 module.exports = chatHub;
