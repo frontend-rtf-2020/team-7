@@ -523,7 +523,6 @@ const Messenger = ({
               <div className="messagesForm">
                 <Messages />
               </div>
-              <br />
               <div className="msg">
                 <input
                   className="msginput"
@@ -539,6 +538,11 @@ const Messenger = ({
                   type="submit"
                   onClick={handleSubmit}
                   value=""
+                />
+                <input
+                    className="record-btn"
+                    type="submit"
+                    value=""
                 />
               </div>
             </div>
@@ -568,7 +572,6 @@ const Messenger = ({
             <div className="messagesForm">
               <Messages />
             </div>
-            <br />
             <div className="msg">
               <input
                 className="msginput"
@@ -584,6 +587,11 @@ const Messenger = ({
                 type="submit"
                 onClick={handleSubmit}
                 value=""
+              />
+              <input
+                  className="record-btn"
+                  type="submit"
+                  value=""
               />
             </div>
           </div>

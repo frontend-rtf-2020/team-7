@@ -64,6 +64,9 @@
 .form-for-choose div{
     width: 95%;
 }
+.chosen-users div{
+    width: 95%;
+}
 .form-for-choose .all-users div .user-btn{
     border-radius: 0;
     background: #3b4ec2;
@@ -250,6 +253,20 @@ input.msgbtn:hover{
     background-image:  url("/arrow.png"),linear-gradient(45deg, #E73A98 0%, #E73A98 50%, #CE0071 100%);
     background-position: center;
 }
+input.record-btn{
+    background-image: url("/micro.png"), linear-gradient(45deg, #E73A98 0%, #CE0071 50%, #4013AF 100%);
+    background-size: 70%, cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    margin: 0 10px;
+}
+input.record-btn:hover{
+    margin: 0 10px;
+    background-size: 70%, cover;
+    background-image:  url("/micro.png"),linear-gradient(45deg, #E73A98 0%, #E73A98 50%, #CE0071 100%);
+    background-repeat: no-repeat;
+    background-position: center;
+}
 .list-of-users{
     border-bottom: 4px solid #4c0855;
     padding: 2.3vh 5px;
@@ -260,8 +277,12 @@ input.msgbtn:hover{
     font-size: 20px;
 }
 .create-btn{
+    width: 95%;
+    margin-left: 0;
+    margin-right: 0;
     position: relative;
-    left: 10%;
+    left: 50%;
+    transform: translate(-50%, 0);
 }
 .usersForm ul button{
     margin: 0;
@@ -293,6 +314,9 @@ input.msgbtn:hover{
     overflow: hidden;
 }
 .user-btn .name-time > h1{
+    width: 80%;
+}
+.current-user-btn .name-time > h1{
     width: 80%;
 }
 .msg-date{
@@ -373,6 +397,7 @@ ul{
 .msg{
     display:flex;
     justify-content: space-between;
+    margin-top: 12px;
 }
 .right-pos{
     display: inline-flex;
