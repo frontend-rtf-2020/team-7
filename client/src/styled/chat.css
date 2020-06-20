@@ -412,7 +412,6 @@ ul{
 }
 .current-voice{
     align-self: flex-end;
-    width: 33%;
     margin-bottom: 10px;
 }
 .voice{
