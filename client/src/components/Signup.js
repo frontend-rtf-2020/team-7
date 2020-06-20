@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { sendemail, signup } from "../actions/session";
@@ -13,10 +13,10 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 const Signup = ({ errors, signup, sendemail }) => {
-  const [email, setEmail] = useState('');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [code, setCode] = useState('');
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [code, setCode] = useState("");
 
   const sendCode = (e) => {
     e.preventDefault();
@@ -60,26 +60,46 @@ const Signup = ({ errors, signup, sendemail }) => {
       <form>
         <span className="text-center">регистрация</span>
         <div className="input-container">
-          <input type="email" name="email" value={email} onChange={handleChangeEmail} />
+          <input
+            type="email"
+            name="email"
+            value={email}
+            onChange={handleChangeEmail}
+          />
           <label>Email:</label>
         </div>
         <div className="input-container">
-          <input type="text" name="username" value={username} onChange={handleChangeUsername} />
+          <input
+            type="text"
+            name="username"
+            value={username}
+            onChange={handleChangeUsername}
+          />
           <label>Username:</label>
         </div>
         <div className="input-container">
-          <input type="password" name="password" value={password} onChange={handleChangePassword} />
+          <input
+            type="password"
+            name="password"
+            value={password}
+            onChange={handleChangePassword}
+          />
           <label>Password:</label>
         </div>
         <input type="submit" value="Отправить код" onClick={sendCode} />
         <span className="error-text">{errors}</span>
         <div className="input-container">
-          <input type="text" name="code" value={code} onChange={handleChangeCode} />
+          <input
+            type="text"
+            name="code"
+            value={code}
+            onChange={handleChangeCode}
+          />
           <label>Проверочный код:</label>
         </div>
         <input type="submit" value="Зарегистрироваться" onClick={signUp} />
       </form>
-      <br/>
+      <br />
       <label className="label-text">
         Уже существует аккаунт?
         <Link to="/login">Авторизоваться</Link>

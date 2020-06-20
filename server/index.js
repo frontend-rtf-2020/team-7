@@ -40,15 +40,15 @@ const cors = require('cors');
 
     //определяем действие при подключении
     io.on('connection', (socket) => {
-      console.log("New client connected");
-      socket.on('saveMessage', (message) => chatHub.saveMessage(message));
+      console.log('New client connected');
+      socket.on('allUsers', (user) => chatHub.allUsers(user, socket));
       socket.on('chatList', (user) => chatHub.chatList(user, socket));
       socket.on('messageList', (user) => chatHub.messageList(user, socket));
-      socket.on('allUsers', (user) => chatHub.allUsers(user, socket));
+      socket.on('saveMessage', (message) => chatHub.saveMessage(message));
       socket.on('deleteDialog', (user) => chatHub.deleteDialog(user));
       socket.on('updateGroupChat', (data) => chatHub.updateGroupChat(data));
-      socket.on("disconnect", () => {
-        console.log("Client disconnected");
+      socket.on('disconnect', () => {
+        console.log('Client disconnected');
       });
     });
 

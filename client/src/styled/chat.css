@@ -406,3 +406,17 @@ ul{
 .right-pos{
     display: inline-flex;
 }
+.invisible{
+    width: 0;
+    height: 0;
+}
+.current-voice{
+    align-self: flex-end;
+    width: 33%;
+    margin-bottom: 10px;
+}
+.voice{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}

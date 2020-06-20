@@ -1,35 +1,34 @@
 const Joi = require('joi');
 
-const messageForEmail =
-    'должен быть рабочим';
+const messageForEmail = 'должен быть рабочим';
 const email = Joi.string()
-    .regex(/^\S+@\S+\.\S+$/)
-    .options({
-      language: {
-        string: {
-          regex: {
-            base: messageForEmail,
-          },
+  .regex(/^\S+@\S+\.\S+$/)
+  .options({
+    language: {
+      string: {
+        regex: {
+          base: messageForEmail,
         },
       },
-    })
-    .required();
+    },
+  })
+  .required();
 
 const messageForUsername =
-    'должен содержать от 3 до 20 букв английского языка или цифр, ' +
-    'но не должен содержать никаких спец. символов';
+  'должен содержать от 3 до 20 букв английского языка или цифр, ' +
+  'но не должен содержать никаких спец. символов';
 const username = Joi.string()
-    .regex(/^[a-z0-9]{3,20}$/i)
-    .options({
-      language: {
-        string: {
-          regex: {
-            base: messageForUsername,
-          },
+  .regex(/^[a-z0-9]{3,20}$/i)
+  .options({
+    language: {
+      string: {
+        regex: {
+          base: messageForUsername,
         },
       },
-    })
-    .required();
+    },
+  })
+  .required();
 
 const messageForPassword =
   'должен содержать от 6 до 16 символов, ' +

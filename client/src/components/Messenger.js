@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { connect } from "react-redux";
+import { ReactMic } from "react-mic";
 import {
   logout,
   saveMessage,
@@ -56,6 +57,7 @@ const Messenger = ({
   const [groupChat, setGroupChat] = useState([]); //переменная для выбранных пользователей группового чата
   const [openAddingUsers, setOpenAddingUsers] = useState(""); //переменная для добавления пользователей в групповой чат
   const [openDeletingUsers, setOpenDeletingUsers] = useState(""); //переменная для удаления пользователей из группового чата
+  const [record, setRecord] = useState(false); //начало и остановка записи аудио
 
   const handleSearch = (e) => {
     let list = [];
@@ -427,7 +429,33 @@ const Messenger = ({
 
   function Messages() {
     const listMessages = chatShow.map((message) => {
-      if (message.split("\n").length > 1) {
+      if (message.includes("data:audio/webm;codecs=opus;base64,")) {
+        const byteCharacters = atob(
+          message
+            .split("\n")[1]
+            .replace("data:audio/webm;codecs=opus;base64,", "")
+        );
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: "audio/webm;codecs=opus" });
+        const blobURL = URL.createObjectURL(blob);
+        if (message.split("\n")[0] === session.username) {
+          return (
+            <div key={Math.random()} className="current-voice">
+              <audio key={Math.random()} src={blobURL} controls="controls" />
+            </div>
+          );
+        } else {
+          return (
+            <div key={Math.random()} className="voice">
+              <audio key={Math.random()} src={blobURL} controls="controls" />
+            </div>
+          );
+        }
+      } else if (message.split("\n").length > 1) {
         if (message.split("\n")[0] === session.username) {
           return (
             <div key={Math.random()} className="current-msg-frame">
@@ -477,7 +505,7 @@ const Messenger = ({
       updateListOfUsers() ||
         updateDialogs() ||
         updateMessages(sendingToCustomer);
-    }, 500);
+    }, 1000);
     return () => clearInterval(interval);
   }, [
     usersList,
@@ -488,6 +516,35 @@ const Messenger = ({
     updateListOfUsers,
     updateMessages,
   ]);
+
+  const recording = (e) => {
+    e.preventDefault();
+    if (record === false) setRecord(true);
+    else setRecord(false);
+  };
+
+  const blobToBase64 = (blob) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(blob);
+    return new Promise((resolve) => {
+      reader.onloadend = () => {
+        resolve(reader.result);
+      };
+    });
+  };
+
+  function onStop(recordedBlob) {
+    blobToBase64(recordedBlob.blob).then((res) => {
+      const mes = {
+        fromUser: session.username,
+        toUser: sendingToCustomer,
+        message: res,
+      };
+      saveMessage(mes);
+    });
+    updateMessages(sendingToCustomer);
+    updateDialogs();
+  }
 
   return (
     <form className="inline-block">
@@ -523,7 +580,15 @@ const Messenger = ({
               <div className="messagesForm">
                 <Messages />
               </div>
+              <br />
               <div className="msg">
+                <ReactMic
+                  record={record}
+                  className="invisible"
+                  onStop={onStop}
+                  strokeColor="#000000"
+                  backgroundColor="#FF4081"
+                />
                 <input
                   className="msginput"
                   type="text"
@@ -540,14 +605,15 @@ const Messenger = ({
                   value=""
                 />
                 <input
-                    className="record-btn"
-                    type="submit"
-                    value=""
+                  onClick={recording}
+                  className="record-btn"
+                  type="submit"
+                  value=""
                 />
               </div>
             </div>
             <div className="blankGroupChatForm">
-              <h1 className="participants">Участники чата</h1>
+              <h1>Участники чата</h1>
               <div className="chosen-users">
                 <GroupChat />
               </div>
@@ -572,7 +638,15 @@ const Messenger = ({
             <div className="messagesForm">
               <Messages />
             </div>
+            <br />
             <div className="msg">
+              <ReactMic
+                record={record}
+                className="invisible"
+                onStop={onStop}
+                strokeColor="#000000"
+                backgroundColor="#FF4081"
+              />
               <input
                 className="msginput"
                 type="text"
@@ -589,17 +663,17 @@ const Messenger = ({
                 value=""
               />
               <input
-                  className="record-btn"
-                  type="submit"
-                  value=""
+                onClick={recording}
+                className="record-btn"
+                type="submit"
+                value=""
               />
             </div>
           </div>
         )}
         {openCreating === "true" && (
           <div className="blankGroupChatForm">
-            {openDeletingUsers === "true" && <h1>Удалить пользователей</h1>}
-            {openDeletingUsers === "" && <h1>Добавить пользователей</h1>}
+            <h1>Добавить пользователей</h1>
             <div className="form-for-choose">
               <div className="all-users">
                 {openDeletingUsers === "" && (

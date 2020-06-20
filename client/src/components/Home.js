@@ -5,15 +5,6 @@ import { Link } from "react-router-dom";
 
 export default () => (
   <>
-    {/*<a className="btn btn-primary" href={"/signup"}>*/}
-    {/*  Регистрация*/}
-    {/*</a>*/}
-    {/*<a className="btn btn-primary" href={"/login"}>*/}
-    {/*  Авторизация*/}
-    {/*</a>*/}
-    {/*<a className="btn btn-primary" href={"/messenger"}>*/}
-    {/*  Перейти к чату*/}
-    {/*</a>*/}
     <div className="box">
       <span className="text-center">Начальная страница</span>
       <div className="home">
