@@ -580,7 +580,6 @@ const Messenger = ({
               <div className="messagesForm">
                 <Messages />
               </div>
-              <br />
               <div className="msg">
                 <ReactMic
                   record={record}
@@ -623,7 +622,7 @@ const Messenger = ({
               </div>
             </div>
             <div className="blankGroupChatForm">
-              <h1>Участники чата</h1>
+              <h1 className="participants">Участники чата</h1>
               <div className="chosen-users">
                 <GroupChat />
               </div>
@@ -648,7 +647,6 @@ const Messenger = ({
             <div className="messagesForm">
               <Messages />
             </div>
-            <br />
             <div className="msg">
               <ReactMic
                 record={record}
@@ -693,7 +691,8 @@ const Messenger = ({
         )}
         {openCreating === "true" && (
           <div className="blankGroupChatForm">
-            <h1>Добавить пользователей</h1>
+            {openDeletingUsers === "true" && <h1>Удалить пользователей</h1>}
+            {openDeletingUsers === "" && <h1>Добавить пользователей</h1>}
             <div className="form-for-choose">
               <div className="all-users">
                 {openDeletingUsers === "" && (
