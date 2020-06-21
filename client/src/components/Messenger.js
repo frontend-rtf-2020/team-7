@@ -503,8 +503,8 @@ const Messenger = ({
   useEffect(() => {
     const interval = setInterval(() => {
       updateListOfUsers() ||
-        updateDialogs() ||
-        updateMessages(sendingToCustomer);
+      updateDialogs() ||
+      updateMessages(sendingToCustomer);
     }, 1000);
     return () => clearInterval(interval);
   }, [
@@ -589,15 +589,25 @@ const Messenger = ({
                   strokeColor="#000000"
                   backgroundColor="#FF4081"
                 />
-                <input
-                  className="msginput"
-                  type="text"
-                  name="message"
-                  placeholder="Сообщение"
-                  value={messageField}
-                  onChange={handleMessageField}
-                  onKeyPress={pressEnter}
-                />
+                {record === false && (
+                    <input
+                        className="msginput"
+                        type="text"
+                        name="message"
+                        placeholder="Сообщение"
+                        value={messageField}
+                        onChange={handleMessageField}
+                        onKeyPress={pressEnter}
+                    />
+                )}
+                {record === true && (
+                    <input
+                        className="msginput"
+                        type="readonly"
+                        name="message"
+                        placeholder="Идет запись голоса!"
+                    />
+                )}
                 <input
                   className="msgbtn"
                   type="submit"
@@ -647,15 +657,25 @@ const Messenger = ({
                 strokeColor="#000000"
                 backgroundColor="#FF4081"
               />
-              <input
-                className="msginput"
-                type="text"
-                name="message"
-                placeholder="Сообщение"
-                value={messageField}
-                onChange={handleMessageField}
-                onKeyPress={pressEnter}
-              />
+              {record === false && (
+                <input
+                    className="msginput"
+                    type="text"
+                    name="message"
+                    placeholder="Сообщение"
+                    value={messageField}
+                    onChange={handleMessageField}
+                    onKeyPress={pressEnter}
+                />
+              )}
+              {record === true && (
+                  <input
+                      className="msginput"
+                      type="readonly"
+                      name="message"
+                      placeholder="Идет запись голоса!"
+                  />
+              )}
               <input
                 className="msgbtn"
                 type="submit"
