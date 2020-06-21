@@ -396,7 +396,7 @@ const Messenger = ({
     return element.map((user) => {
       if (user !== "")
         return (
-          <ul>
+          <ul key={Math.random()}>
             <button className="user-btn" key={user} value={user}>
               {user}
             </button>
